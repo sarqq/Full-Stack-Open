@@ -2,37 +2,69 @@ import { useState } from 'react'
 import './App.css'
 
 const App = () => {
-  const [persons, setPersons] = useState([])
+	const [persons, setPersons] = useState([])
 
-  // kontrolloi lomakkeen kenttää
-  const [newName, setNewName] = useState("")
+	// kontrolloi lomakkeen kenttiä
+	const [newName, setNewName] = useState("")
+	const [newNumber, setNewNumber] = useState("")
 
-  const addName = (event) => {
-    event.preventDefault()
+	// 2.6: henkilön lisäys puhelinluetteloon
+	// 2.8: numeron lisäys henkilötietoihin
+	const addEntry = (event) => {
+   	event.preventDefault()
 
-    //TODO 2.5: lisää nimi luetteloon
+		// 2.7: olemassaolevan nimen tarkistus
+		// henkilö on jo lisätty -> alert
+		if (persons.some(p => p.name === newName)){
+			alert(`${newName} is already added to phonebook`)
+			return
+		}
+		else if (!newNumber) {
+			alert("Missing phone number")
+			return
+		}
 
+		// luodaan uusi nimi-numero-pari
+		const newEntry = {
+			name: newName,
+			number: newNumber
+		}
 
-    //TODO 2.6: estä duplikaatti -> alert
-  }
+		// lisätään puhelinluetteloon
+		setPersons(persons.concat(newEntry))
+		setNewName("")
+		setNewNumber("")
+	}
 
-  return (
-    <div>
-      <h2>Phonebook</h2>
-      <form>
-        <div>
-          name: <input value = {newName} onChange = {setNewName}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+	const handleNameChange = (event) => {
+		console.log(event.target.value)
+		setNewName(event.target.value)
+	}
 
-      <h2>Numbers</h2>
-      TODO
+	const handleNumberChange = (event) => {
+		console.log(event.target.value)
+		setNewNumber(event.target.value)
+	}
 
-      <div>debug: {newName}</div>
-    </div>
+	return (
+   	<div>
+      	<h1>Phonebook</h1>
+			{/*TODO: 2.9: filtteröi nimellä*/}
+
+			<h2>Add new entry:</h2>
+			<form onSubmit={addEntry}>
+				<p>name: <input value={newName} onChange={handleNameChange}/></p>
+				<p>number: <input value={newNumber} onChange={handleNumberChange}/></p>
+				<button type="submit">add</button>
+			</form>
+
+			<h2>Numbers</h2>
+			<ul>
+				{persons.map((person, i) =>
+					<li key={i}>{person.name} {person.number}</li>
+				)}
+			</ul>
+   </div>
   )
 }
 
