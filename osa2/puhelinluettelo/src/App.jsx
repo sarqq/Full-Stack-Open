@@ -2,16 +2,20 @@ import { useState } from 'react'
 import './App.css'
 
 const App = () => {
+	// henkilötiedot
 	const [persons, setPersons] = useState([])
 
-	// kontrolloi lomakkeen kenttiä
+	// lomakkeen kentät
 	const [newName, setNewName] = useState("")
 	const [newNumber, setNewNumber] = useState("")
+
+	// hakukenttä suodatusta varten
+	const [query, setQuery] = useState("")
 
 	// 2.6: henkilön lisäys puhelinluetteloon
 	// 2.8: numeron lisäys henkilötietoihin
 	const addEntry = (event) => {
-   	event.preventDefault()
+   		event.preventDefault()
 
 		// 2.7: olemassaolevan nimen tarkistus
 		// henkilö on jo lisätty -> alert
@@ -36,6 +40,7 @@ const App = () => {
 		setNewNumber("")
 	}
 
+	// käsittelijöitä
 	const handleNameChange = (event) => {
 		console.log(event.target.value)
 		setNewName(event.target.value)
@@ -46,26 +51,38 @@ const App = () => {
 		setNewNumber(event.target.value)
 	}
 
+	// 2.9: nimen perusteella suodatus
+	const filtered = persons.filter(person =>
+		person.name.toLowerCase().includes(query.toLowerCase())
+	)
+
 	return (
-   	<div>
-      	<h1>Phonebook</h1>
-			{/*TODO: 2.9: filtteröi nimellä*/}
+		<div>
+			<h1>Phonebook</h1>
+			<div>
+				<h2>Add new entry:</h2>
+				<form onSubmit={addEntry}>
+					<p>name: <input value={newName} onChange={handleNameChange}/></p>
+					<p>number: <input value={newNumber} onChange={handleNumberChange}/></p>
+					<button type="submit">add</button>
+				</form>
+			</div>
 
-			<h2>Add new entry:</h2>
-			<form onSubmit={addEntry}>
-				<p>name: <input value={newName} onChange={handleNameChange}/></p>
-				<p>number: <input value={newNumber} onChange={handleNumberChange}/></p>
-				<button type="submit">add</button>
-			</form>
+			<div>
+				<h2>Search:</h2>
+				<input type="search" value={query} onChange={(event) => setQuery(event.target.value)}/>
+			</div>
 
-			<h2>Numbers</h2>
-			<ul>
-				{persons.map((person, i) =>
-					<li key={i}>{person.name} {person.number}</li>
-				)}
-			</ul>
-   </div>
-  )
+			<div>
+				<h2>Numbers</h2>
+				<ul>
+					{(filtered ? filtered : persons).map((entry, i) =>
+						<li key={i}>{entry.name} {entry.number}</li>
+					)}
+				</ul>
+			</div>
+		</div>
+	)
 }
 
 export default App
