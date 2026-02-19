@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import './App.css'
+import PhonebookData from './components/PhonebookData.jsx'
+import Filter from './components/Filter.jsx'
+import Form from './components/Form.jsx'
 
 const App = () => {
 	// henkilötiedot
@@ -23,6 +26,7 @@ const App = () => {
 			alert(`${newName} is already added to phonebook`)
 			return
 		}
+		// numero puuttuu -> alert
 		else if (!newNumber) {
 			alert("Missing phone number")
 			return
@@ -40,7 +44,7 @@ const App = () => {
 		setNewNumber("")
 	}
 
-	// käsittelijöitä
+	// tapahtumakäsittelijät
 	const handleNameChange = (event) => {
 		console.log(event.target.value)
 		setNewName(event.target.value)
@@ -51,6 +55,11 @@ const App = () => {
 		setNewNumber(event.target.value)
 	}
 
+	const handleQueryChange = (event) => {
+		console.log(event.target.value)
+		setQuery(event.target.value)
+	}
+
 	// 2.9: nimen perusteella suodatus
 	const filtered = persons.filter(person =>
 		person.name.toLowerCase().includes(query.toLowerCase())
@@ -59,28 +68,9 @@ const App = () => {
 	return (
 		<div>
 			<h1>Phonebook</h1>
-			<div>
-				<h2>Add new entry:</h2>
-				<form onSubmit={addEntry}>
-					<p>name: <input value={newName} onChange={handleNameChange}/></p>
-					<p>number: <input value={newNumber} onChange={handleNumberChange}/></p>
-					<button type="submit">add</button>
-				</form>
-			</div>
-
-			<div>
-				<h2>Search:</h2>
-				<input type="search" value={query} onChange={(event) => setQuery(event.target.value)}/>
-			</div>
-
-			<div>
-				<h2>Numbers</h2>
-				<ul>
-					{(filtered ? filtered : persons).map((entry, i) =>
-						<li key={i}>{entry.name} {entry.number}</li>
-					)}
-				</ul>
-			</div>
+			<Form onSubmit={addEntry} newName={newName} newNumber={newNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange}/>
+			<Filter query={query} handleQueryChange={handleQueryChange}/>
+			<PhonebookData persons={filtered}/>
 		</div>
 	)
 }
