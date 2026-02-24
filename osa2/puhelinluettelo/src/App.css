@@ -5,3 +5,7 @@
   text-align: center;
 }
 
+.delete {
+  margin: 0 auto;
+  color: red;
+}
