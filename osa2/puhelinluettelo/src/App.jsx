@@ -4,12 +4,14 @@ import './App.css'
 import PhonebookData from './components/PhonebookData.jsx'
 import Filter from './components/Filter.jsx'
 import Form from './components/Form.jsx'
+import Alert from './components/Alert.jsx'
 
 const App = () => {
 	const [persons, setPersons] = useState([])
 	const [newName, setNewName] = useState("")
 	const [newNumber, setNewNumber] = useState("")
 	const [query, setQuery] = useState("")
+	const [msg, setMsg] = useState("")
 
 	// 2.11: alkutilan haku palvelimelta
 	useEffect(() => {
@@ -21,6 +23,11 @@ const App = () => {
 			})
 			.catch((error) => {
 				console.log(error)
+				
+				setMsg("Unknown server error :/")
+				setTimeout(() => {
+					setMsg(null)
+				}, 3000)
 			})
 	}, [])
 	console.log("render", persons.length, "entries")
@@ -52,8 +59,20 @@ const App = () => {
 					.then((response) => {
 						console.log(`updated ${target.name}`)
 						setPersons(persons.map((person) => person.id !== target.id ? person : response))
+						
+						setMsg(`Updated ${target.name}`)
+						setTimeout(() => {
+							setMsg(null)
+						}, 3000)
 					})
-					.catch((error) => console.log(error))
+					.catch((error) => {
+						console.log(error)
+						
+						setMsg(`Could not update ${newName}`)
+						setTimeout(() => {
+							setMsg(null)
+						}, 3000)
+					})
 			}
 			setNewName("")
 			setNewNumber("")
@@ -64,8 +83,20 @@ const App = () => {
 				.create(newEntry)
 				.then(response => { 
 					setPersons(persons.concat(response.data))
+
+					setMsg(`Successfully added ${newName}`)
+					setTimeout(() => {
+						setMsg(null)
+					}, 3000)
 				})
-				.catch((error) => console.log(error))
+				.catch((error) => {
+					console.log(error)
+
+					setMsg(`Could not add ${newName}`)
+					setTimeout(() => {
+						setMsg(null)
+					}, 3000)
+				})
 			
 			setNewName("")
 			setNewNumber("")
@@ -74,13 +105,32 @@ const App = () => {
 
 	// 2.14: henkilön poisto puhelinluettelosta
 	const deleteEntry = (id, name) => {
+		const target = persons.find((person) => person.id === id)
+		
+		if (!target){
+			alert(`Person ${name} not found!`)
+			return
+		}
+		
 		if(window.confirm(`Delete ${name}?`)) {
 			bookService
 				.delete(id)
 				.then(() => {
 					setPersons(persons.filter((person => person.id !== id)))
+
+					setMsg(`Successfully deleted ${name}`)
+					setTimeout(() => {
+						setMsg(null)
+					}, 3000)
 				})
-				.catch((error) => console.log(error))
+				.catch((error) => {
+					console.log(error)
+					
+					setMsg(`Could not delete ${name}`)
+					setTimeout(() => {
+						setMsg(null)
+					}, 3000)
+				})
 		}
 	}
 
@@ -113,6 +163,7 @@ const App = () => {
 	return (
 		<div>
 			<h1>Phonebook</h1>
+			<Alert msg={msg}/>
 			<Form onSubmit={addEntry} newName={newName} newNumber={newNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange}/>
 			<Filter query={query} handleQueryChange={handleQueryChange}/>
 			<PhonebookData persons={filtered} handleDelete={handleDelete}/>
