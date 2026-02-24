@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import './App.css'
 import PhonebookData from './components/PhonebookData.jsx'
 import Filter from './components/Filter.jsx'
@@ -14,6 +15,15 @@ const App = () => {
 
 	// hakukenttä suodatusta varten
 	const [query, setQuery] = useState("")
+
+	// 2.11: alkutilan haku palvelimelta
+	useEffect(() => {
+		axios.get("http://localhost:3001/persons").then(response => {
+			console.log("promise fulfilled")
+			setPersons(response.data)
+		})
+	}, [])
+	console.log("render", persons.length, "entries")
 
 	// 2.6: henkilön lisäys puhelinluetteloon
 	// 2.8: numeron lisäys henkilötietoihin
