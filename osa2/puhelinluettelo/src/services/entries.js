@@ -18,7 +18,10 @@ const getAll = () => {
     return axios.get(baseUrl)
 }
 
-// TODO: päivitys
+// päivitys
+const update = (id, newValue) => {
+    return axios.put(`${baseUrl}/${id}`, newValue).then((response) => response.data)
+}
 
 // 2.14: poisto
 const del = (id) => {
@@ -28,6 +31,7 @@ const del = (id) => {
 export default {
     getEntry: getEntry,
     getAll: getAll,
+    update: update,
     create: create,
     delete: del
 }

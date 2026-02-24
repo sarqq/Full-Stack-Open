@@ -29,38 +29,47 @@ const App = () => {
 	// 2.8: numeron lisäys henkilötietoihin
 	const addEntry = (event) => {
    		event.preventDefault()
-
-		// 2.7: olemassaolevan nimen tarkistus
-		// henkilö on jo lisätty -> alert
-		if (persons.some(p => p.name === newName)){
-			alert(`${newName} is already added to phonebook`)
-			return
-		}
-		// numero puuttuu -> alert
-		else if (!newNumber) {
-			alert("Missing phone number")
-			return
-		}
-
-		// luodaan uusi entry
+		
 		const newEntry = {
 			name: newName,
 			number: newNumber
 		}
-		
-		// 2.12: lisätään uusi entry palvelimelle
-		bookService
-			.create(newEntry)
-			.then(response => { 
-				setPersons(persons.concat(response.data))
-				setNewName("")
-				setNewNumber("")
-			})
-			.catch((error) => {
-				console.log(error)
-				setNewName("")
-				setNewNumber("")
-			})
+
+		// nimi tai numero puuttuu -> alert
+		if (!newName || !newNumber){
+			alert("Missing data!")
+			return
+		}
+
+		// 2.7: olemassaolevan nimen tarkistus
+		const target = persons.find((person) => person.name === newName)
+
+		// 2.15: henkilö löytyy -> päivitys?
+		if (target) {
+			if(window.confirm(`${target.name} is already added to phonebook, replace the old number with a new one?`)){
+				bookService
+					.update(target.id, newEntry)
+					.then((response) => {
+						console.log(`updated ${target.name}`)
+						setPersons(persons.map((person) => person.id !== target.id ? person : response))
+					})
+					.catch((error) => console.log(error))
+			}
+			setNewName("")
+			setNewNumber("")
+		}
+		// 2.12: henkilö ei löydy -> lisätään uusi entry palvelimelle
+		else{
+			bookService
+				.create(newEntry)
+				.then(response => { 
+					setPersons(persons.concat(response.data))
+				})
+				.catch((error) => console.log(error))
+			
+			setNewName("")
+			setNewNumber("")
+		}
 	}
 
 	// 2.14: henkilön poisto puhelinluettelosta
@@ -71,9 +80,7 @@ const App = () => {
 				.then(() => {
 					setPersons(persons.filter((person => person.id !== id)))
 				})
-				.catch((error) => {
-					console.log(error)
-				})
+				.catch((error) => console.log(error))
 		}
 	}
 
