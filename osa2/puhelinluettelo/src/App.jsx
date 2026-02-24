@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import bookService from './services/entries.js'
 import './App.css'
 import PhonebookData from './components/PhonebookData.jsx'
 import Filter from './components/Filter.jsx'
 import Form from './components/Form.jsx'
-
-const BASE_URL= "http://localhost:3001/persons"
 
 const App = () => {
 	// henkilötiedot
@@ -20,7 +18,7 @@ const App = () => {
 
 	// 2.11: alkutilan haku palvelimelta
 	useEffect(() => {
-		axios.get(BASE_URL).then(response => {
+		bookService.read().then(response => {
 			console.log("promise fulfilled")
 			setPersons(response.data)
 		})
@@ -51,14 +49,11 @@ const App = () => {
 		}
 		
 		// 2.12 lisätään uusi entry palvelimelle
-		axios.post(BASE_URL, newEntry).then(response => {
-			console.log(response)
-			
+		bookService.create(newEntry).then(response => { 
 			setPersons(persons.concat(response.data))
 			setNewName("")
 			setNewNumber("")
 		})
-		
 	}
 
 	// tapahtumakäsittelijät
