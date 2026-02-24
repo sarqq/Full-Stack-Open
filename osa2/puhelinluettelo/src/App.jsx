@@ -5,6 +5,8 @@ import PhonebookData from './components/PhonebookData.jsx'
 import Filter from './components/Filter.jsx'
 import Form from './components/Form.jsx'
 
+const BASE_URL= "http://localhost:3001/persons"
+
 const App = () => {
 	// henkilötiedot
 	const [persons, setPersons] = useState([])
@@ -18,7 +20,7 @@ const App = () => {
 
 	// 2.11: alkutilan haku palvelimelta
 	useEffect(() => {
-		axios.get("http://localhost:3001/persons").then(response => {
+		axios.get(BASE_URL).then(response => {
 			console.log("promise fulfilled")
 			setPersons(response.data)
 		})
@@ -47,11 +49,16 @@ const App = () => {
 			name: newName,
 			number: newNumber
 		}
-
-		// lisätään puhelinluetteloon
-		setPersons(persons.concat(newEntry))
-		setNewName("")
-		setNewNumber("")
+		
+		// 2.12 lisätään uusi entry palvelimelle
+		axios.post(BASE_URL, newEntry).then(response => {
+			console.log(response)
+			
+			setPersons(persons.concat(response.data))
+			setNewName("")
+			setNewNumber("")
+		})
+		
 	}
 
 	// tapahtumakäsittelijät
