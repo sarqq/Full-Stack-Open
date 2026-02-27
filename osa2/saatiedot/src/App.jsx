@@ -8,6 +8,7 @@ const baseUrl = 'https://studies.cs.helsinki.fi/restcountries/'
 function App() {
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState("")
+  const [display, setDisplay] = useState(null)
 
   // maatietojen haku
   useEffect(() => {
@@ -22,16 +23,22 @@ function App() {
   }, [])
 
   // tulosten suodatus
-  const display = filter
+  const results = filter
     ? countries.filter(country =>
       country.name.common.toLowerCase().includes(filter.toLowerCase())
     )
     : []
 
-  // tapahtumankäsittelijä
+  // tapahtumankäsittelijät
   const handleFilter = (event) => {
     console.log(event.target.value)
+    setDisplay(null)
     setFilter(event.target.value)
+  }
+
+  const handleShow = (country) => {
+    console.log(country)
+    setDisplay(country)
   }
 
   return (
@@ -44,20 +51,21 @@ function App() {
       </div>
 
       <ul>
-        {display.length <= 10 && display.length > 1
-        ? (display.map((country) => (
+        {results.length <= 10 && results.length > 1
+        ? (results.map((country) => (
           <li key={country.name.common}>
             {country.name.common}
-            <button>show</button>
+            <button type="button" onClick={() => handleShow(country)}>show</button>
           </li>
         ))
           )
-        : display.length > 10
+        : results.length > 10
           ? <p>Too many matches, specify another filter.</p>
-          : display.length === 1        
-            ? <CountryData country={display[0]}/>
+          : results.length === 1        
+            ? <CountryData country={results[0]}/>
             : <p>Nothing to display.</p>
         }
+        {display && <CountryData country={display}/>}
       </ul>
     </div>
   )
