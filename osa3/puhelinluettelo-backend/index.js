@@ -33,10 +33,24 @@ app.get('/api/persons', (request, response) => {
 app.get('/info', (request, response) => {
     const n = persons.length
     
-    response.send(
-        `<p>Current phonebook size: ${n} people.</p>
-        <p>Request made at: ${new Date().toUTCString()}</p>`
-    )
+    response.send(`<p>Current phonebook size: ${n} people.</p><p>Request made at: ${new Date().toUTCString()}</p>`)
+})
+
+// 3.3: yksittäisen puhelintiedon haku
+app.get('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    const entry = persons.find(person => person.id === id)
+
+    // henkilö löytyi -> palautetaan henkilö
+    if (entry) {
+        response.json(entry)
+    }
+    //henkilö ei löytynyt -> 404
+    else {
+        response.status(404).json({
+            message: `Person with id ${id} not found.`
+        })
+    }
 })
 
 const PORT = 3001
