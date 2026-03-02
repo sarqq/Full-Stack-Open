@@ -1,0 +1,17 @@
+{
+  "name": "puhelinluettelo-backend",
+  "version": "0.0.1",
+  "description": "Osassa 2 tehdyn puhelinluettelo-sovelluksen backend",
+  "license": "ISC",
+  "author": "Sara Baba",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo moicca :3 && exit 0"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
