@@ -1,4 +1,5 @@
-const http = require('http')
+const express = require('express')
+const app = express()
 
 let persons = [
     {
@@ -23,11 +24,22 @@ let persons = [
     },
 ]
 
-const app = http.createServer((request, response) => {
-    response.writeHead(200, {'Content-Type': 'application/json'})
-    response.end(JSON.stringify(persons))
+// 3.1: koko puhelinluettelon palautus
+app.get('/api/persons', (request, response) => {
+    response.json(persons)
+})
+
+// 3.2: puhelinluettelon metatietojen palautus
+app.get('/info', (request, response) => {
+    const n = persons.length
+    
+    response.send(
+        `<p>Current phonebook size: ${n} people.</p>
+        <p>Request made at: ${new Date().toUTCString()}</p>`
+    )
 })
 
 const PORT = 3001
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`)
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+})
