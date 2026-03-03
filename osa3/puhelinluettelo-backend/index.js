@@ -24,6 +24,8 @@ let phonebook = [
     },
 ]
 
+app.use(express.json())
+
 // 3.1: koko puhelinluettelon palautus
 app.get('/api/persons', (request, response) => {
     response.status(200).json(phonebook)
@@ -48,7 +50,7 @@ app.get('/api/persons/:id', (request, response) => {
     //henkilö ei löytynyt -> 404
     else {
         response.status(404).json({
-            message: `Person with id ${id} not found.`
+            error: `Person with id ${id} not found.`
         })
     }
 })
@@ -67,11 +69,37 @@ app.delete('/api/persons/:id', (request, response) => {
     // henkilöä ei löytynyt -> 404
     else {
         response.status(404).json({
-            message: `Person with id ${id} not found.`
+            error: `Person with id ${id} not found.`
         })
     }
-    
+})
 
+// 3.5: uuden puhelintiedon lisäys
+app.post('/api/persons', (request, response) => {
+    const entry = request.body
+
+    // ei parametreja
+    if(!entry || !entry.name || !entry.number) {
+        response.status(400).json({error: "Invalid arguments."})
+    }
+
+    // henkilö löytyy jo puhelinluettelosta -> 200, ei lisäystä
+    phonebook.forEach(person => {
+        if (person.name === entry.name) {
+            response.status(200).json({
+                error: `Person ${entry.name} already in phonebook.`
+            })
+        }
+    })
+
+    // parametrit ok, ei valmiiksi luettelossa oleva henkilö -> luo uusi puhelintieto
+    const max_id = phonebook.length > 0
+        ? Math.max(...phonebook.map(n => Number(n.id)))
+        : 0
+    entry.id = String(max_id+1)    
+
+    phonebook = phonebook.concat(entry)
+    response.status(201).json({entry})
 })
 
 const PORT = 3001
