@@ -27,19 +27,31 @@ let phonebook = [
 
 app.use(express.json())
 
-//3.7: morgan
-app.use(morgan('tiny'))
+// 3.8: token näyttämään luotu olio POST-pyyntöjen lokimerkinnöissä
+morgan.token('created-object', (request, response) => { 
+    return response.locals.createdObject ? JSON.stringify(response.locals.createdObject) : "";
+});
+
+morgan.token('pid', () => process.pid);
+
+// 3.7 & 3.8: morgan
+app.use(morgan('tiny', {skip: (request) => request.method === 'POST'}));
+
+app.use(morgan(':method :url :status :pid - :response-time ms :created-object', {
+    skip: (request) => request.method !== 'POST'
+    })
+);
 
 // 3.1: koko puhelinluettelon palautus
 app.get('/api/persons', (request, response) => {
-    response.status(200).json(phonebook)
+    return response.status(200).json(phonebook)
 })
 
 // 3.2: puhelinluettelon metatietojen palautus
 app.get('/info', (request, response) => {
     const n = phonebook.length
     
-    response.status(200).send(`<p>Current phonebook size: ${n} people.</p><p>Request made at: ${new Date().toUTCString()}</p>`)
+    return response.status(200).send(`<p>Current phonebook size: ${n} people.</p><p>Request made at: ${new Date().toUTCString()}</p>`)
 })
 
 // 3.3: yksittäisen puhelintiedon haku
@@ -49,13 +61,11 @@ app.get('/api/persons/:id', (request, response) => {
 
     // henkilö löytyi -> palautetaan henkilö
     if (entry) {
-        response.status(200).json(entry)
+        return response.status(200).json(entry)
     }
     //henkilö ei löytynyt -> 404
     else {
-        response.status(404).json({
-            error: `Person with id ${id} not found.`
-        })
+        return response.status(404).json({error: `Person with id ${id} not found.`})
     }
 })
 
@@ -68,13 +78,11 @@ app.delete('/api/persons/:id', (request, response) => {
     if (target) {
         phonebook = phonebook.filter(person => person.id !== id)
 
-        response.status(204).end()
+        return response.status(204).end()
     }
     // henkilöä ei löytynyt -> 404
     else {
-        response.status(404).json({
-            error: `Person with id ${id} not found.`
-        })
+        return response.status(404).json({error: `Person with id ${id} not found.`})
     }
 })
 
@@ -82,17 +90,15 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const entry = request.body
 
-    // 3.6: ei parametreja
+    // 3.6: ei parametreja -> 400
     if(!entry || !entry.name || !entry.number) {
-        response.status(400).json({error: "Invalid arguments."})
+        return response.status(400).json({error: "Invalid arguments."})
     }
 
-    // 3.6: henkilö löytyy jo puhelinluettelosta -> 200, ei lisäystä
-    phonebook.forEach(person => {
-        if (person.name === entry.name) {
-            response.status(200).json({error: "Name must be unique."})
-        }
-    })
+    // 3.6: henkilö löytyy jo puhelinluettelosta -> 400, ei lisäystä
+    if (phonebook.some(person => person.name === entry.name)) {
+        return response.status(400).json({error: "Name must be unique."})
+    }
 
     // parametrit ok, ei valmiiksi luettelossa oleva henkilö -> luo uusi puhelintieto
     const max_id = phonebook.length > 0
@@ -101,7 +107,9 @@ app.post('/api/persons', (request, response) => {
     entry.id = String(max_id+1)    
 
     phonebook = phonebook.concat(entry)
-    response.status(201).json({entry})
+    
+    response.locals.createdObject = entry
+    return response.status(201).json(entry)
 })
 
 const PORT = 3001
