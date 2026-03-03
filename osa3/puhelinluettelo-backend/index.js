@@ -25,6 +25,7 @@ let phonebook = [
     },
 ]
 
+app.use(express.static('dist'))
 app.use(express.json())
 
 // 3.8: token näyttämään luotu olio POST-pyyntöjen lokimerkinnöissä
@@ -107,12 +108,12 @@ app.post('/api/persons', (request, response) => {
     entry.id = String(max_id+1)    
 
     phonebook = phonebook.concat(entry)
-    
     response.locals.createdObject = entry
+    
     return response.status(201).json(entry)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
