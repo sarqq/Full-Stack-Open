@@ -78,17 +78,15 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const entry = request.body
 
-    // ei parametreja
+    // 3.6: ei parametreja
     if(!entry || !entry.name || !entry.number) {
         response.status(400).json({error: "Invalid arguments."})
     }
 
-    // henkilö löytyy jo puhelinluettelosta -> 200, ei lisäystä
+    // 3.6: henkilö löytyy jo puhelinluettelosta -> 200, ei lisäystä
     phonebook.forEach(person => {
         if (person.name === entry.name) {
-            response.status(200).json({
-                error: `Person ${entry.name} already in phonebook.`
-            })
+            response.status(200).json({error: "Name must be unique."})
         }
     })
 
