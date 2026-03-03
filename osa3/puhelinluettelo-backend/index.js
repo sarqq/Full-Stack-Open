@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 
-let persons = [
+let phonebook = [
     {
         id: "1",
         name: "Arto Hellas",
@@ -26,24 +26,24 @@ let persons = [
 
 // 3.1: koko puhelinluettelon palautus
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    response.status(200).json(phonebook)
 })
 
 // 3.2: puhelinluettelon metatietojen palautus
 app.get('/info', (request, response) => {
-    const n = persons.length
+    const n = phonebook.length
     
-    response.send(`<p>Current phonebook size: ${n} people.</p><p>Request made at: ${new Date().toUTCString()}</p>`)
+    response.status(200).send(`<p>Current phonebook size: ${n} people.</p><p>Request made at: ${new Date().toUTCString()}</p>`)
 })
 
 // 3.3: yksittäisen puhelintiedon haku
 app.get('/api/persons/:id', (request, response) => {
     const id = request.params.id
-    const entry = persons.find(person => person.id === id)
+    const entry = phonebook.find(person => person.id === id)
 
     // henkilö löytyi -> palautetaan henkilö
     if (entry) {
-        response.json(entry)
+        response.status(200).json(entry)
     }
     //henkilö ei löytynyt -> 404
     else {
@@ -51,6 +51,27 @@ app.get('/api/persons/:id', (request, response) => {
             message: `Person with id ${id} not found.`
         })
     }
+})
+
+// 3.4: yksittäisen puhelintiedon poisto
+app.delete('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    const target = phonebook.find(person => person.id === id)
+    
+    // henkilö löytyi, poisto -> 204
+    if (target) {
+        phonebook = phonebook.filter(person => person.id !== id)
+
+        response.status(204).end()
+    }
+    // henkilöä ei löytynyt -> 404
+    else {
+        response.status(404).json({
+            message: `Person with id ${id} not found.`
+        })
+    }
+    
+
 })
 
 const PORT = 3001
