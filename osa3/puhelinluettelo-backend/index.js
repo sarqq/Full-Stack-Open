@@ -1,4 +1,5 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 
 let phonebook = [
@@ -25,6 +26,9 @@ let phonebook = [
 ]
 
 app.use(express.json())
+
+//3.7: morgan
+app.use(morgan('tiny'))
 
 // 3.1: koko puhelinluettelon palautus
 app.get('/api/persons', (request, response) => {
