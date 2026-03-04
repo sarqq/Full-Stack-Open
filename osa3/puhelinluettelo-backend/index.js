@@ -43,6 +43,15 @@ app.use(morgan(':method :url :status :pid - :response-time ms :created-object', 
     })
 );
 
+app.get('/', (request, response) => {
+    return response.status(200).send(
+        `<h1>FSMOOC/osa3/puhelinluettelo</h1>
+        <ul><li>/info - puhelinluettelon tiedot</li>
+        <li>/api/persons - puhelinluettelo</li>
+        <li>/api/persons/{id} - yksittäinen puhelintieto</li></ul>`
+    )
+})
+
 // 3.1: koko puhelinluettelon palautus
 app.get('/api/persons', (request, response) => {
     return response.status(200).json(phonebook)
