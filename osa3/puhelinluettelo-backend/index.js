@@ -1,7 +1,6 @@
 require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
-const mongoose = require('mongoose')
 const Person = require('./models/person')
 
 // expressJS
@@ -9,13 +8,6 @@ const app = express()
 
 app.use(express.static('dist'))
 app.use(express.json())
-
-// mongoose
-mongoose.set('strictQuery', false)
-mongoose.connect(process.env.MONGODB_URI, {family:4})
-    .then(result => {console.log("Connected to MongoDB")})
-    .catch((error) => {console.log(`Error connecting to MongoDB: ${error.message}`)})
-
 
 // 3.8: token näyttämään luotu olio POST-pyyntöjen lokimerkinnöissä
 morgan.token('created-object', (request, response) => { 
@@ -29,16 +21,6 @@ app.use(morgan(':method :url :status :pid - :response-time ms :created-object', 
     skip: (request) => request.method !== 'POST'
     })
 );
-
-// root -> API-tiedot
-app.get('/', (request, response) => {
-    response.status(200).send(
-        `<h1>FSMOOC/osa3/puhelinluettelo</h1>
-        <ul><li>/info - puhelinluettelon tiedot</li>
-        <li>/api/persons - puhelinluettelo</li>
-        <li>/api/persons/{id} - yksittäinen puhelintieto</li></ul>`
-    )
-})
 
 // 3.1 & 3.13: koko puhelinluettelon palautus
 app.get('/api/persons', (request, response) => {
@@ -70,7 +52,7 @@ app.get('/api/persons/:id', (request, response) => {
             // ei löytynyt -> 404
             : response.status(404).json({error: `Person with id ${id}  not found.`})
     })
-    .catch(error => response.status(400).json({error: "Malformed id."}))    
+    .catch(() => response.status(400).json({error: "Malformed id."}))    
 })
 
 // 3.4: yksittäisen puhelintiedon poisto
@@ -82,7 +64,7 @@ app.delete('/api/persons/:id', (request, response) => {
             // ei löytynyt -> 404
             : response.status(404).json({error: `Person with id ${request.params.id} not found.`})
     })
-    .catch(error => response.status(400).json({error: "Malformed id."}))
+    .catch(() => response.status(400).json({error: "Malformed id."}))
 })
 
 // 3.5: uuden puhelintiedon lisäys
