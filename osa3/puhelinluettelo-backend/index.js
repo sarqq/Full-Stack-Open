@@ -21,7 +21,6 @@ mongoose.connect(process.env.MONGODB_URI, {family:4})
 morgan.token('created-object', (request, response) => { 
     return response.locals.createdObject ? JSON.stringify(response.locals.createdObject) : "";
 });
-
 morgan.token('pid', () => process.pid);
 
 // 3.7 & 3.8: morgan-kirjausten formatointi
@@ -43,9 +42,10 @@ app.get('/', (request, response) => {
 
 // 3.1 & 3.13: koko puhelinluettelon palautus
 app.get('/api/persons', (request, response) => {
-    Person.find({}).then((phonebook) => {
-        response.status(200).json(phonebook)
+    Person.find({}).then(persons => {
+        response.status(200).json(persons)
     })
+    .catch(error => response.status(500).json({error: error.message}))
 })
 
 // 3.2: puhelinluettelon metatietojen palautus
@@ -55,7 +55,8 @@ app.get('/info', (request, response) => {
             `<p>Current phonebook size: ${count} people.</p>
             <p>Request made at: ${new Date().toUTCString()}</p>`
         )
-    })    
+    })
+    .catch(error => response.status(500).json({error: error.message}))
 })
 
 // 3.3: yksittäisen puhelintiedon haku
@@ -68,10 +69,8 @@ app.get('/api/persons/:id', (request, response) => {
             ? response.status(200).json(found)
             // ei löytynyt -> 404
             : response.status(404).json({error: `Person with id ${id}  not found.`})
-    }).catch(error => {
-        response.status(400).json({error: "Malformed id."})
     })
-    
+    .catch(error => response.status(400).json({error: "Malformed id."}))    
 })
 
 // 3.4: yksittäisen puhelintiedon poisto
@@ -82,7 +81,8 @@ app.delete('/api/persons/:id', (request, response) => {
             ? response.status(204).end()
             // ei löytynyt -> 404
             : response.status(404).json({error: `Person with id ${request.params.id} not found.`})
-    })    
+    })
+    .catch(error => response.status(400).json({error: "Malformed id."}))
 })
 
 // 3.5: uuden puhelintiedon lisäys
@@ -108,9 +108,11 @@ app.post('/api/persons', (request, response) => {
         })
 
         newEntry.save().then(savedEntry => {
+            response.locals.createdObject = savedEntry
             response.status(201).json(savedEntry)
         })
     })
+    .catch(error => response.status(500).json({error: error.message}))
 })
 
 // catch-all tuntemattomille kutsuille
