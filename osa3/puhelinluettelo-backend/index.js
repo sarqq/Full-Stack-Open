@@ -1,32 +1,21 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
-const app = express()
+const mongoose = require('mongoose')
+const Person = require('./models/person')
 
-let phonebook = [
-    {
-        id: "1",
-        name: "Arto Hellas",
-        number: "040-123456"
-    },
-    {
-        id: "2",
-        name: "Ada Lovelace",
-        number: "39-44-5323523"
-    },
-    {
-        id: "3",
-        name: "Dan Abramov",
-        number: "12-43-234345"
-    },
-    {
-        id: "4",
-        name: "Mary Poppendieck",
-        number: "39-23-6423122"
-    },
-]
+// expressJS
+const app = express()
 
 app.use(express.static('dist'))
 app.use(express.json())
+
+// mongoose
+mongoose.set('strictQuery', false)
+mongoose.connect(process.env.MONGODB_URI, {family:4})
+    .then(result => {console.log("Connected to MongoDB")})
+    .catch((error) => {console.log(`Error connecting to MongoDB: ${error.message}`)})
+
 
 // 3.8: token näyttämään luotu olio POST-pyyntöjen lokimerkinnöissä
 morgan.token('created-object', (request, response) => { 
@@ -35,16 +24,16 @@ morgan.token('created-object', (request, response) => {
 
 morgan.token('pid', () => process.pid);
 
-// 3.7 & 3.8: morgan
+// 3.7 & 3.8: morgan-kirjausten formatointi
 app.use(morgan('tiny', {skip: (request) => request.method === 'POST'}));
-
 app.use(morgan(':method :url :status :pid - :response-time ms :created-object', {
     skip: (request) => request.method !== 'POST'
     })
 );
 
+// root -> API-tiedot
 app.get('/', (request, response) => {
-    return response.status(200).send(
+    response.status(200).send(
         `<h1>FSMOOC/osa3/puhelinluettelo</h1>
         <ul><li>/info - puhelinluettelon tiedot</li>
         <li>/api/persons - puhelinluettelo</li>
@@ -52,76 +41,85 @@ app.get('/', (request, response) => {
     )
 })
 
-// 3.1: koko puhelinluettelon palautus
+// 3.1 & 3.13: koko puhelinluettelon palautus
 app.get('/api/persons', (request, response) => {
-    return response.status(200).json(phonebook)
+    Person.find({}).then((phonebook) => {
+        response.status(200).json(phonebook)
+    })
 })
 
 // 3.2: puhelinluettelon metatietojen palautus
 app.get('/info', (request, response) => {
-    const n = phonebook.length
-    
-    return response.status(200).send(`<p>Current phonebook size: ${n} people.</p><p>Request made at: ${new Date().toUTCString()}</p>`)
+    Person.countDocuments({}).then(count => {
+        response.status(200).send(
+            `<p>Current phonebook size: ${count} people.</p>
+            <p>Request made at: ${new Date().toUTCString()}</p>`
+        )
+    })    
 })
 
 // 3.3: yksittäisen puhelintiedon haku
 app.get('/api/persons/:id', (request, response) => {
     const id = request.params.id
-    const entry = phonebook.find(person => person.id === id)
 
-    // henkilö löytyi -> palautetaan henkilö
-    if (entry) {
-        return response.status(200).json(entry)
-    }
-    //henkilö ei löytynyt -> 404
-    else {
-        return response.status(404).json({error: `Person with id ${id} not found.`})
-    }
+    Person.findById(id).then((found) => {        
+        return (found)
+            // henkilö löytyi -> 200, palautetaan henkilö
+            ? response.status(200).json(found)
+            // ei löytynyt -> 404
+            : response.status(404).json({error: `Person with id ${id}  not found.`})
+    }).catch(error => {
+        response.status(400).json({error: "Malformed id."})
+    })
+    
 })
 
 // 3.4: yksittäisen puhelintiedon poisto
 app.delete('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const target = phonebook.find(person => person.id === id)
-    
-    // henkilö löytyi, poisto -> 204
-    if (target) {
-        phonebook = phonebook.filter(person => person.id !== id)
-
-        return response.status(204).end()
-    }
-    // henkilöä ei löytynyt -> 404
-    else {
-        return response.status(404).json({error: `Person with id ${id} not found.`})
-    }
+    Person.findByIdAndDelete(request.params.id).then(success => {
+        return (success)
+            // henkilö löytyi, poisto -> 204
+            ? response.status(204).end()
+            // ei löytynyt -> 404
+            : response.status(404).json({error: `Person with id ${request.params.id} not found.`})
+    })    
 })
 
 // 3.5: uuden puhelintiedon lisäys
 app.post('/api/persons', (request, response) => {
-    const entry = request.body
+    const body = request.body
 
     // 3.6: ei parametreja -> 400
-    if(!entry || !entry.name || !entry.number) {
+    if(!body || !body.name || !body.number) {
         return response.status(400).json({error: "Invalid arguments."})
     }
 
     // 3.6: henkilö löytyy jo puhelinluettelosta -> 400, ei lisäystä
-    if (phonebook.some(person => person.name === entry.name)) {
-        return response.status(400).json({error: "Name must be unique."})
-    }
+    Person.findOne({name: body.name}).then(target => {
+        if (target) {
+            return response.status(400).json({error: "Name must be unique."})
+        }
 
-    // parametrit ok, ei valmiiksi luettelossa oleva henkilö -> luo uusi puhelintieto
-    const max_id = phonebook.length > 0
-        ? Math.max(...phonebook.map(n => Number(n.id)))
-        : 0
-    entry.id = String(max_id+1)    
+        // parametrit ok, ei valmiiksi luettelossa oleva henkilö -> luo uusi puhelintieto
 
-    phonebook = phonebook.concat(entry)
-    response.locals.createdObject = entry
-    
-    return response.status(201).json(entry)
+        const newEntry = new Person({
+            name: body.name,
+            number: body.number,
+        })
+
+        newEntry.save().then(savedEntry => {
+            response.status(201).json(savedEntry)
+        })
+    })
 })
 
+// catch-all tuntemattomille kutsuille
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({error: "Unknown endpoint."})
+}
+app.use(unknownEndpoint)
+
+// portti
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
