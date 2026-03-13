@@ -22,6 +22,10 @@ app.use(morgan(':method :url :status :pid - :response-time ms :created-object', 
     })
 );
 
+app.get('/', (request, response) => {
+    response.sendFile('index.html', {root: 'dist'})
+})
+
 // 3.1 & 3.13: koko puhelinluettelon palautus
 app.get('/api/persons', (request, response) => {
     Person.find({}).then(persons => {
