@@ -7,9 +7,16 @@ mongoose.connect(process.env.MONGODB_URI, {family:4})
 
 // skeema
 const personSchema = new mongoose.Schema({
-    id:String,
-    name: String,
-    number: String,
+    id: String,
+    name: {
+        type: String,
+        minlength: 3,
+        required: true
+    },
+    number: {
+        type: String,
+        required: true
+    }
 })
 
 // formaatin muokkaus

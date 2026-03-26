@@ -70,22 +70,16 @@ app.delete('/api/persons/:id', (request, response, next) => {
 app.post('/api/persons', (request, response, next) => {
     const body = request.body
 
-    // 3.6: ei parametreja -> 400
-    if(!body || !body.name || !body.number) {
-        return response.status(400).json({error: "Invalid arguments."})
-    }
-
-    // parametrit ok, ei valmiiksi luettelossa oleva henkilö -> luo uusi puhelintieto
     const newEntry = new Person({
         name: body.name,
         number: body.number,
     })
 
-    newEntry.save().then(savedEntry => {
+    return newEntry.save().then(savedEntry => {
         response.locals.createdObject = savedEntry
         response.status(201).json(savedEntry)
     })
-    .catch((error) => next(error))
+    .catch(error => next(error))
 })
 
 // 3.6: jo olemassaolevan puhelintiedon lisäys
@@ -104,7 +98,6 @@ app.put('/api/persons/:id', (request, response) => {
         return target.save().then((updatedEntry) => {
             response.json(updatedEntry)
         })
-        //tähän asti toimii, ongelmana ettei renderöidy muokkaamisen jälkeen
     })
     .catch(error => {
         console.log(error)

@@ -51,10 +51,10 @@ const App = () => {
 		if (target) {
 			if(window.confirm(`${target.name} is already added to phonebook, replace the old number with a new one?`)){
 				bookService.update(target.id, newEntry).then((response) => {
-					console.log(`Updated ${target.name}`)
+					console.log(`Updated \'${target.name}\'`)
 						
 					setPersons(persons.map((person) => person.id !== target.id ? person : response))
-					setMsg(`Updated ${target.name}`)
+					setMsg(`Updated \'${target.name}\'`)
 					setTimeout(() => {setMsg(null)}, 3000)
 				})
 				.catch((error) => {
@@ -71,14 +71,14 @@ const App = () => {
 		else{
 			bookService.create(newEntry).then(response => { 
 				setPersons(persons => persons.concat(response.data))
-				setMsg(`Successfully added ${newName}`)
-				setTimeout(() => {setMsg(null)}, 3000)
+				setMsg(`Successfully added \'${newName}\'!`)
+				setTimeout(() => {setMsg(null)}, 5000)
 			})
 			.catch((error) => {
-				console.log(error)
+				console.log(error.response.data)
 
-				setMsg(`Could not add ${newName}`)
-				setTimeout(() => {setMsg(null)}, 3000)
+				setMsg(`Could not add \'${newName}\': \{${error}\}`)
+				setTimeout(() => {setMsg(null)}, 5000)
 			})
 			
 			setNewName("")
@@ -91,21 +91,22 @@ const App = () => {
 		const target = persons.find((person) => person.id === id)
 		
 		if (!target){
-			alert(`Person ${name} not found!`)
+			alert(`Person '\${name}'\ not found!`)
 			return
 		}
 		
 		if(window.confirm(`Delete ${name}?`)) {
 			bookService.del(id).then(() => {
 				setPersons(persons.filter((person => person.id !== id)))
-				setMsg(`Successfully deleted ${name}`)
-				setTimeout(() => {setMsg(null)}, 3000)
+				
+				setMsg(`Successfully deleted \'${name}\'`)
+				setTimeout(() => {setMsg(null)}, 5000)
 			})
 			.catch((error) => {
 				console.log(error)
 					
-				setMsg(`Could not delete ${name}`)
-				setTimeout(() => {setMsg(null)}, 3000)
+				setMsg(`Could not delete \'${name}\': ${error}`)
+				setTimeout(() => {setMsg(null)}, 5000)
 			})
 		}
 	}
