@@ -11,16 +11,16 @@ app.use(express.json())
 
 // 3.8: token näyttämään luotu olio POST-pyyntöjen lokimerkinnöissä
 morgan.token('created-object', (request, response) => { 
-    return response.locals.createdObject ? JSON.stringify(response.locals.createdObject) : "";
-});
-morgan.token('pid', () => process.pid);
+    return response.locals.createdObject ? JSON.stringify(response.locals.createdObject) : ''
+})
+morgan.token('pid', () => process.pid)
 
 // 3.7 & 3.8: morgan-kirjausten formatointi
-app.use(morgan('tiny', {skip: (request) => request.method === 'POST'}));
-app.use(morgan(':method :url :status :pid - :response-time ms :created-object', {
-    skip: (request) => request.method !== 'POST'
-    })
-);
+app.use(morgan('tiny', {skip: (request) => request.method === 'POST'}))
+app.use(morgan(
+    ':method :url :status :pid - :response-time ms :created-object',
+    {skip: (request) => request.method !== 'POST'}
+))
 
 app.get('/', (request, response) => {
     response.sendFile('index.html', {root: 'dist'})
@@ -59,7 +59,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 // 3.4: yksittäisen puhelintiedon poisto
 app.delete('/api/persons/:id', (request, response, next) => {
-    Person.findByIdAndDelete(request.params.id).then(result => {
+    Person.findByIdAndDelete(request.params.id).then(() => {
         // henkilö löytyi, poisto -> 204
         response.status(204).end()
     })
@@ -91,7 +91,7 @@ app.put('/api/persons/:id', (request, response) => {
             return response.status(404).json({error: `Person with id ${request.params.id} not found.`})
         }
 
-        console.log("Target found")
+        console.log('Target found')
         target.name = name
         target.number = number
 
@@ -107,7 +107,7 @@ app.put('/api/persons/:id', (request, response) => {
 
 // catch-all tuntemattomille kutsuille
 const unknownEndpoint = (request, response) => {
-    response.status(404).send({error: "Unknown endpoint."}).end()
+    response.status(404).send({error: 'Unknown endpoint.'}).end()
 }
 app.use(unknownEndpoint)
 
@@ -115,10 +115,10 @@ app.use(unknownEndpoint)
 const errorHandler = (error, request, response, next) => {
     console.error(error.message)
     
-    if(error.name === "CastError") {
-        return response.status(400).send({error: "Malformed id"})
+    if(error.name === 'CastError') {
+        return response.status(400).send({error: 'Malformed id'})
     }
-    else if(error.name === "ValidationError") {
+    else if(error.name === 'ValidationError') {
         return response.status(400).json({error: error.message})
     }
 
