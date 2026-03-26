@@ -31,10 +31,6 @@ app.get('/api/persons', (request, response) => {
     Person.find({}).then(persons => {
         response.status(200).json(persons)
     })
-    .catch(error => {
-        console.log(error)
-        response.status(500).json({error: error.message}).end()
-    })
 })
 
 // 3.2: puhelinluettelon metatietojen palautus
@@ -45,14 +41,10 @@ app.get('/info', (request, response) => {
             <p>Request made at: ${new Date().toUTCString()}</p>`
         )
     })
-    .catch(error => {
-        console.log(error)
-        response.status(500).json({error: error.message}).end()
-    })
 })
 
 // 3.3: yksittäisen puhelintiedon haku
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
 
     Person.findById(id).then((found) => {        
@@ -62,26 +54,20 @@ app.get('/api/persons/:id', (request, response) => {
             // ei löytynyt -> 404
             : response.status(404).json({error: `Person with id ${id}  not found.`})
     })
-    .catch(error => {
-        console.log(error)
-        response.status(400).json({error: "Malformed id."}).end()
-    })
+    .catch((error) => next(error))
 })
 
 // 3.4: yksittäisen puhelintiedon poisto
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndDelete(request.params.id).then(result => {
         // henkilö löytyi, poisto -> 204
         response.status(204).end()
     })
-    .catch(error => {
-        console.log(error)
-        response.status(400).json({error: `Person with id ${request.params.id} not found.`}).end()
-    })
+    .catch((error) => next(error))
 })
 
 // 3.5: uuden puhelintiedon lisäys
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
 
     // 3.6: ei parametreja -> 400
@@ -99,10 +85,7 @@ app.post('/api/persons', (request, response) => {
         response.locals.createdObject = savedEntry
         response.status(201).json(savedEntry)
     })
-    .catch(error => {
-        console.log(error)
-        response.status(500).json({error: error.message}).end()
-    })
+    .catch((error) => next(error))
 })
 
 // 3.6: jo olemassaolevan puhelintiedon lisäys
@@ -134,6 +117,21 @@ const unknownEndpoint = (request, response) => {
     response.status(404).send({error: "Unknown endpoint."}).end()
 }
 app.use(unknownEndpoint)
+
+// 3.16: middleware virheidenkäsittelylle
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+    
+    if(error.name === "CastError") {
+        return response.status(400).send({error: "Malformed id"})
+    }
+    else if(error.name === "ValidationError") {
+        return response.status(400).json({error: error.message})
+    }
+
+    next(error)
+}
+app.use(errorHandler)
 
 // portti
 const PORT = process.env.PORT || 3001
