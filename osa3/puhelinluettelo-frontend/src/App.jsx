@@ -15,22 +15,18 @@ const App = () => {
 
 	// 2.11: alkutilan haku palvelimelta
 	useEffect(() => {
-		bookService
-			.getAll()
-			.then(response => {
-				console.log("promise fulfilled")
-				setPersons(response.data)
-			})
-			.catch((error) => {
-				console.log(error)
-				
-				setMsg("Unknown server error :/")
-				setTimeout(() => {
-					setMsg(null)
-				}, 3000)
-			})
+		bookService.getAll().then(response => {
+			console.log("Successfully loaded phonebook")
+			setPersons(response.data)
+		})
+		.catch((error) => {
+			console.log(error)
+			
+			setMsg("Unknown server error :/")
+			setTimeout(() => {setMsg(null)}, 3000)
+		})
 	}, [])
-	console.log("render", persons.length, "entries")
+	console.log(`Rendered ${persons.length} entries`)
 
 	// 2.6: henkilön lisäys puhelinluetteloon
 	// 2.8: numeron lisäys henkilötietoihin
@@ -54,49 +50,36 @@ const App = () => {
 		// 2.15: henkilö löytyy -> päivitys?
 		if (target) {
 			if(window.confirm(`${target.name} is already added to phonebook, replace the old number with a new one?`)){
-				bookService
-					.update(target.id, newEntry)
-					.then((response) => {
-						console.log(`updated ${target.name}`)
-						setPersons(persons.map((person) => person.id !== target.id ? person : response))
+				bookService.update(target.id, newEntry).then((response) => {
+					console.log(`Updated ${target.name}`)
 						
-						setMsg(`Updated ${target.name}`)
-						setTimeout(() => {
-							setMsg(null)
-						}, 3000)
-					})
-					.catch((error) => {
-						console.log(error)
-						
-						setMsg(`Could not update ${newName}`)
-						setTimeout(() => {
-							setMsg(null)
-						}, 3000)
-					})
+					setPersons(persons.map((person) => person.id !== target.id ? person : response))
+					setMsg(`Updated ${target.name}`)
+					setTimeout(() => {setMsg(null)}, 3000)
+				})
+				.catch((error) => {
+					console.log(error)
+
+					setMsg(`Could not update ${newName}`)
+					setTimeout(() => {setMsg(null)}, 3000)
+				})
 			}
 			setNewName("")
 			setNewNumber("")
 		}
 		// 2.12: henkilö ei löydy -> lisätään uusi entry palvelimelle
 		else{
-			bookService
-				.create(newEntry)
-				.then(response => { 
-					setPersons(persons.concat(response.data))
+			bookService.create(newEntry).then(response => { 
+				setPersons(persons => persons.concat(response.data))
+				setMsg(`Successfully added ${newName}`)
+				setTimeout(() => {setMsg(null)}, 3000)
+			})
+			.catch((error) => {
+				console.log(error)
 
-					setMsg(`Successfully added ${newName}`)
-					setTimeout(() => {
-						setMsg(null)
-					}, 3000)
-				})
-				.catch((error) => {
-					console.log(error)
-
-					setMsg(`Could not add ${newName}`)
-					setTimeout(() => {
-						setMsg(null)
-					}, 3000)
-				})
+				setMsg(`Could not add ${newName}`)
+				setTimeout(() => {setMsg(null)}, 3000)
+			})
 			
 			setNewName("")
 			setNewNumber("")
@@ -113,24 +96,17 @@ const App = () => {
 		}
 		
 		if(window.confirm(`Delete ${name}?`)) {
-			bookService
-				.delete(id)
-				.then(() => {
-					setPersons(persons.filter((person => person.id !== id)))
-
-					setMsg(`Successfully deleted ${name}`)
-					setTimeout(() => {
-						setMsg(null)
-					}, 3000)
-				})
-				.catch((error) => {
-					console.log(error)
+			bookService.del(id).then(() => {
+				setPersons(persons.filter((person => person.id !== id)))
+				setMsg(`Successfully deleted ${name}`)
+				setTimeout(() => {setMsg(null)}, 3000)
+			})
+			.catch((error) => {
+				console.log(error)
 					
-					setMsg(`Could not delete ${name}`)
-					setTimeout(() => {
-						setMsg(null)
-					}, 3000)
-				})
+				setMsg(`Could not delete ${name}`)
+				setTimeout(() => {setMsg(null)}, 3000)
+			})
 		}
 	}
 

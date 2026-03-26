@@ -19,12 +19,12 @@ const getAll = () => {
 
 // päivitys
 const update = (id, newValue) => {
-    return axios.put(`${baseUrl}/${id}`, newValue).then((response) => response.data)
+    return axios.put(`${baseUrl}/${id}`, newValue).then(response => response.data)
 }
 
 // 2.14: poisto
 const del = (id) => {
-    return axios.delete(`${baseUrl}/${id}`).then((response) => response.data)
+    return axios.delete(`${baseUrl}/${id}`)
 }
 
 export default {
