@@ -1,3 +1,6 @@
+const blog = require("../models/blog")
+const _ = require('lodash')
+
 const dummy = (blogs) => {
    return 1
 }
@@ -5,7 +8,7 @@ const dummy = (blogs) => {
 // 4.4: palauttaa listan blogien tykkäysten summan
 const totalLikes = (blogs) => {
    // tyhjä blogilista -> 0
-   if (!blogs) {
+   if (!blogs || blogs.length === 0) {
       return 0
    }
 
@@ -30,4 +33,22 @@ const favoriteBlog = (blogs) => {
    return favorite
 }
 
-module.exports = {dummy, totalLikes, favoriteBlog}
+// 4.6: palauttaa eniten blogeja kirjoittaneen nimen ja blogien määrän
+const mostBlogs = (blogs) => {
+   // tyhjä blogilista
+   if (!blogs || blogs.length === 0) {
+      return {author: "N/A", blogs: 0}
+   }
+
+   // kerää blogit author-attribuutin mukaan author-n -pareiksi ja etsii niistä maksimin
+   const topAuthor = _(blogs).countBy('author').toPairs().maxBy(([_, count]) => count)
+
+   return {author: topAuthor[0], blogs: topAuthor[1]}
+}
+
+module.exports = {
+   dummy,
+   totalLikes,
+   favoriteBlog,
+   mostBlogs
+}
