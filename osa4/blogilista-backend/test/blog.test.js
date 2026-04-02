@@ -87,3 +87,18 @@ describe('Total likes', () => {
       assert.strictEqual(listHelper.totalLikes(bloglist_n), 36)
    })
 })
+
+// 4.5: favoriteBlog-funktion testeri
+describe('Blog with most likes', () => {
+   test('in an empty list -> null', () => {
+      assert.deepStrictEqual(listHelper.favoriteBlog([]), null)
+   })
+
+   test('in a size 1 list -> blogs[0]', () => {
+      assert.deepStrictEqual(listHelper.favoriteBlog(bloglist_one), bloglist_one[0])
+   })
+
+   test('in a size n list-> max(b1.likes .. bn.likes)', () => {
+      assert.deepStrictEqual(listHelper.favoriteBlog(bloglist_n), bloglist_n[2])
+   })
+})
