@@ -8,7 +8,7 @@ const blogRouter = require('./controllers/blogs')
 const app = express()
 
 // tietokantayhteyden muodostaminen
-logger.info(`Connecting to: ${config.MONGODB_URI}`)
+logger.info(`Connecting to MongoDB...`)
 mongoose.connect(config.MONGODB_URI, { family: 4 }).then(() => {
    logger.info('Connected to MongoDB')
 })
