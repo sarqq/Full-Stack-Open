@@ -105,7 +105,7 @@ describe('Blog with most likes', () => {
 
 // 4.6: mostBlogs-funktion testeri
 describe('Author with most blogs', () => {
-   test('in an empty list -> \"N/A\"', () => {
+   test('in an empty list -> {\"N/A\": 0}', () => {
       assert.deepStrictEqual(
          listHelper.mostBlogs([]),
          {author: "N/A", blogs: 0}
@@ -119,10 +119,34 @@ describe('Author with most blogs', () => {
       )
    })
 
-   test('in a size n list-> max(b1.likes .. bn.likes)', () => {
+   test('in a size n list-> max(count(b1.author) .. count(bn.author))', () => {
       assert.deepStrictEqual(
          listHelper.mostBlogs(bloglist_n),
          {author: "Robert C. Martin", blogs: 3}
+      )
+   })
+})
+
+// 4.7: mostLikes-funktion testeri
+describe('Author with most likes across blogs', () => {
+   test('in an empty list -> {\"N/A\": 0}', () => {
+      assert.deepStrictEqual(
+         listHelper.mostLikes([]),
+         {author: "N/A", likes: 0}
+      )
+   })
+
+   test('in a size 1 list -> {blogs[0].author: blogs[0].likes}', () => {
+      assert.deepStrictEqual(
+         listHelper.mostLikes(bloglist_one),
+         {author: bloglist_one[0].author, likes: bloglist_one[0].likes}
+      )
+   })
+
+   test('in a size n list-> max(b1.likes .. bn.likes)', () => {
+      assert.deepStrictEqual(
+         listHelper.mostLikes(bloglist_n),
+         {author: "Edsger W. Dijkstra", likes: 17}
       )
    })
 })

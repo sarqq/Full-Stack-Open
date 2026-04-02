@@ -40,15 +40,37 @@ const mostBlogs = (blogs) => {
       return {author: "N/A", blogs: 0}
    }
 
-   // kerää blogit author-attribuutin mukaan author-n -pareiksi ja etsii niistä maksimin
-   const topAuthor = _(blogs).countBy('author').toPairs().maxBy(([_, count]) => count)
+   // kerää blogit author-attribuutin mukaan author-n -pareiksi
+   // ja etsii niistä maksimin
+   const topAuthor = _(blogs).countBy('author')
+      .toPairs()
+      .maxBy(([_, count]) => count)
 
    return {author: topAuthor[0], blogs: topAuthor[1]}
+}
+
+// 4.7: palauttaa eniten tykkäyksiä saaneen kirjoittaneen nimen ja tykkäyksien määrän
+const mostLikes = (blogs) => {
+   // tyhjä blogilista
+   if (!blogs || blogs.length === 0) {
+      return {author: "N/A", likes: 0}
+   }
+
+   // kerää blogit author-attribuutin mukaan author-[blogit] -mapiksi
+   // ja etsii arvolistan summan maksimin
+   const topLikes = _(blogs).groupBy('author')
+      .map((items, author) => ({
+         author, likes: _.sumBy(items, "likes")
+      }))
+      .maxBy("likes")
+
+   return topLikes
 }
 
 module.exports = {
    dummy,
    totalLikes,
    favoriteBlog,
-   mostBlogs
+   mostBlogs,
+   mostLikes
 }
