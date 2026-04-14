@@ -35,21 +35,30 @@ describe('GET /api/blogs', () => {
     })
 })
 
-// 4.10: uuden blogin lisäämiseen liittyviä testejä
 describe('POST /api/blogs', () => {
    beforeEach(async () => {
       await Blog.deleteMany({})
       await Blog.insertMany(testdata.initialBlogs)
    })
 
+   // 4.10: uuden blogin lisäys
    test('New blog added successfully', async () => {
-      const initialLength = bloglist.length
-
       await api.post('/api/blogs').send(testdata.newBlog).expect(201)
-
       const response = await api.get('/api/blogs')
 
-      assert.strictEqual(response.body.length, (initialLength+1))
+      assert.strictEqual(response.body.length, (bloglist.length+1))
+   })
+
+   // 4.11: ei arvoa likes-kentälle -> 0
+   test('Default value 0 for property \'likes\'', async () => {
+      const partialBlog = {
+         title: 'test411',
+         author: 'mie',
+         url: 'joku.urli'
+      }
+      
+      const response = await api.post('/api/blogs').send(partialBlog).expect(201)
+      assert.strictEqual(response.body.likes, 0)
    })
 })
 
