@@ -80,16 +80,21 @@ describe('POST /api/blogs', () => {
    })
 })
 
-describe ('DELETE /api/blogs/:id', () => {
+describe('DELETE /api/blogs/:id', () => {
    // 4.13: yksittäisen blogin poiston testaus
    test('Blog deleted successfully', async () => {
-      const testId = bloglist[0]._id
+      const response1 = await api.get('/api/blogs')
+      const testId = response1.body[0].id
 
       await api.delete(`/api/blogs/${testId}`).expect(204)
       
-      const response = await api.get('/api/blogs')
-      assert.strictEqual(response.body.length, bloglist.length-1)
+      const response2 = await api.get('/api/blogs')
+      assert.strictEqual(response2.body.length, bloglist.length-1)
    })
+})
+
+describe('PUT /api/blogs/:id', () => {
+   //TODO:
 })
 
 after(async () => {
