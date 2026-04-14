@@ -12,27 +12,27 @@ const api = supertest(app)
 const bloglist = testdata.initialBlogs
 
 describe('GET /api/blogs', () => {
-    beforeEach(async () => {
-        await Blog.deleteMany({})
-        await Blog.insertMany(testdata.initialBlogs)
-    })
+   beforeEach(async () => {
+      await Blog.deleteMany({})
+      await Blog.insertMany(testdata.initialBlogs)
+   })
     
-    test('Blogs are returned as JSON', async () => {
-        await api.get('/api/blogs').expect(200).expect('Content-Type', 'application/json; charset=utf-8')
-    })
+   test('Blogs are returned as JSON', async () => {
+      await api.get('/api/blogs').expect(200).expect('Content-Type', 'application/json; charset=utf-8')
+   })
 
-    test('All blogs are returned', async () => {
-        const response = await api.get('/api/blogs')
+   test('All blogs are returned', async () => {
+      const response = await api.get('/api/blogs')
         
-        assert.strictEqual(response.body.length, bloglist.length)
-    })
+      assert.strictEqual(response.body.length, bloglist.length)
+   })
 
-    // 4.9: palautettujen blogien tunnistekenttä id eikä _id
-    test('Returned blogs have a property \'id\', instead of default \'_id\'', async () => {
-        const response = await api.get('/api/blogs')
+   // 4.9: palautettujen blogien tunnistekenttä id eikä _id
+   test('Returned blogs have a property \'id\', instead of default \'_id\'', async () => {
+      const response = await api.get('/api/blogs')
 
-        assert.strictEqual(response.body.every(blog => Object.hasOwn(blog, "id") && !Object.hasOwn(blog, "_id")), true)
-    })
+      assert.strictEqual(response.body.every(blog => Object.hasOwn(blog, "id") && !Object.hasOwn(blog, "_id")), true)
+   })
 })
 
 describe('POST /api/blogs', () => {
@@ -77,6 +77,18 @@ describe('POST /api/blogs', () => {
       const response2 = await api.post('/api/blogs').send(partialBlog2).expect(400)
 
       assert.strictEqual((response1.status === 400 && response2.status === 400), true)
+   })
+})
+
+describe ('DELETE /api/blogs/:id', () => {
+   // 4.13: yksittäisen blogin poiston testaus
+   test('Blog deleted successfully', async () => {
+      const testId = bloglist[0]._id
+
+      await api.delete(`/api/blogs/${testId}`).expect(204)
+      
+      const response = await api.get('/api/blogs')
+      assert.strictEqual(response.body.length, bloglist.length-1)
    })
 })
 
