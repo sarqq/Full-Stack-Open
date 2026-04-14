@@ -49,7 +49,7 @@ describe('POST /api/blogs', () => {
       assert.strictEqual(response.body.length, (bloglist.length+1))
    })
 
-   // 4.11: ei arvoa likes-kentälle -> 0
+   // 4.11: tyhjä likes-kenttä -> likes = 0
    test('Default value 0 for property \'likes\'', async () => {
       const partialBlog = {
          title: 'test411',
@@ -59,6 +59,24 @@ describe('POST /api/blogs', () => {
       
       const response = await api.post('/api/blogs').send(partialBlog).expect(201)
       assert.strictEqual(response.body.likes, 0)
+   })
+
+   // 4.12: tyhjät title- ja url-kentät -> statuskoodi 400
+   test('Adding blog without required fields -> 400', async () => {
+      const partialBlog1 = {
+         title: 'testi412',
+         author: 'mie'
+      }
+
+      const partialBlog2 = {
+         author: 'mie',
+         url: 'upee.urli'
+      }
+
+      const response1 = await api.post('/api/blogs').send(partialBlog1).expect(400)
+      const response2 = await api.post('/api/blogs').send(partialBlog2).expect(400)
+
+      assert.strictEqual((response1.status === 400 && response2.status === 400), true)
    })
 })
 
