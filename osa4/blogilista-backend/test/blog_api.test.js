@@ -35,6 +35,24 @@ describe('GET /api/blogs', () => {
     })
 })
 
+// 4.10: uuden blogin lisäämiseen liittyviä testejä
+describe('POST /api/blogs', () => {
+   beforeEach(async () => {
+      await Blog.deleteMany({})
+      await Blog.insertMany(testdata.initialBlogs)
+   })
+
+   test('New blog added successfully', async () => {
+      const initialLength = bloglist.length
+
+      await api.post('/api/blogs').send(testdata.newBlog).expect(201)
+
+      const response = await api.get('/api/blogs')
+
+      assert.strictEqual(response.body.length, (initialLength+1))
+   })
+})
+
 after(async () => {
-    await mongoose.connection.close()
+   await mongoose.connection.close()
 })

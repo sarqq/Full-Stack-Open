@@ -52,4 +52,11 @@ const initialBlogs = [
    }
 ]
 
-module.exports = {initialBlogs}
+const newBlog = {
+   title: 'testiblogi',
+   author: 'mie',
+   url: 'https://hienourli.hienodomain',
+   likes: 5
+}
+
+module.exports = {initialBlogs, newBlog}
