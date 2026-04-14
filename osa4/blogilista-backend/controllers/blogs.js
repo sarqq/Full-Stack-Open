@@ -8,6 +8,19 @@ blogRouter.get('/', (request, response) => {
    })
 })
 
+// palauttaa yhden blogin
+blogRouter.get('/:id', (request, response) => {
+   const id = request.params.id
+
+   Blog.findById(id).then((found) => {        
+      return (found)
+         // blogi löytyy -> 200
+         ? response.status(200).json(found)
+         // ei löytynyt -> 404
+         : response.status(404).json({error: `Blog with id ${id} not found.`})
+   })
+})
+
 // 4.10: blogin lisäys
 blogRouter.post('/', (request, response) => {
    const blog = new Blog(request.body)
@@ -29,23 +42,16 @@ blogRouter.delete('/:id', (request, response) => {
    })
 })
 
-// 4.14: blogin päivitys
+// 4.14: blogin likes-kentän päivitys
 blogRouter.put('/:id', (request, response) => {
-   const updated = request.body
+   const updatedLikes = request.body.likes
     
-   Blog.findById(request.params.id).then(target => {
+   Blog.findByIdAndUpdate(request.params.id, {likes: updatedLikes}).then(target => {
       if(!target){
-         return response.status(404)
+         return response.status(404).end()
       }
 
-      target.title = updated.title
-      target.author = updated.author
-      target.url = updated.url
-      target.likes = updated.likes | 0
-
-      return target.save().then((updatedEntry) => {
-         response.status(204).json(updatedEntry)
-      })
+      return response.status(204).json(target)
    })
 })
 

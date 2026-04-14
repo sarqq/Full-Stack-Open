@@ -81,20 +81,41 @@ describe('POST /api/blogs', () => {
 })
 
 describe('DELETE /api/blogs/:id', () => {
+   beforeEach(async () => {
+      await Blog.deleteMany({})
+      await Blog.insertMany(testdata.initialBlogs)
+   })
+
    // 4.13: yksittäisen blogin poiston testaus
    test('Blog deleted successfully', async () => {
-      const response1 = await api.get('/api/blogs')
-      const testId = response1.body[0].id
-
+      let response = await api.get('/api/blogs')
+      
+      const testId = response.body[0].id
       await api.delete(`/api/blogs/${testId}`).expect(204)
       
-      const response2 = await api.get('/api/blogs')
-      assert.strictEqual(response2.body.length, bloglist.length-1)
+      response = await api.get('/api/blogs')
+      assert.strictEqual(response.body.length, bloglist.length-1)
    })
 })
 
 describe('PUT /api/blogs/:id', () => {
-   //TODO:
+   beforeEach(async () => {
+      await Blog.deleteMany({})
+      await Blog.insertMany(testdata.initialBlogs)
+   })
+
+   // 4.14: yksittäisen blogin muokkauksen testaus
+   test('Updating object properties', async () => {
+      const updated = {likes: 2}
+
+      let response = await api.get('/api/blogs')
+      const testId = response.body[0].id
+      
+      await api.put(`/api/blogs/${testId}`).send(updated).expect(204)
+      
+      response = await api.get(`/api/blogs/${testId}`)
+      assert.strictEqual(response.body.likes, updated.likes)
+   })
 })
 
 after(async () => {
