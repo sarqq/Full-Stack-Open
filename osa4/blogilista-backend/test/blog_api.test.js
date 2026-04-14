@@ -26,6 +26,13 @@ describe('GET /api/blogs', () => {
         
         assert.strictEqual(response.body.length, bloglist.length)
     })
+
+    // 4.9: palautettujen blogien tunnistekenttä id eikä _id
+    test('Returned blogs have a property \'id\', instead of default \'_id\'', async () => {
+        const response = await api.get('/api/blogs')
+
+        assert.strictEqual(response.body.every(blog => Object.hasOwn(blog, "id") && !Object.hasOwn(blog, "_id")), true)
+    })
 })
 
 after(async () => {
