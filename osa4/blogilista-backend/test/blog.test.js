@@ -1,7 +1,7 @@
 const { test, describe } = require('node:test')
 const assert = require('node:assert')
 const listHelper = require('../utils/list_helper')
-const testdata = require('../utils/test_data')
+const testdata = require('./test_helper')
 
 const bloglist = testdata.initialBlogs
 

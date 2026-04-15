@@ -1,4 +1,5 @@
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 // testidata
 const initialBlogs = [
@@ -46,11 +47,10 @@ const initialBlogs = [
    }
 ]
 
-const newBlog = {
-   title: 'testiblogi',
-   author: 'mie',
-   url: 'https://hienourli.hienodomain',
-   likes: 5
+const usersInDB = async () => {
+   const users = await User.find({})
+
+   return users.map(user => user.toJSON())
 }
 
-module.exports = {initialBlogs, newBlog}
+module.exports = {initialBlogs, usersInDB}

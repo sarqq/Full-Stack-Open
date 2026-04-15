@@ -3,20 +3,20 @@ const { test, after, describe, beforeEach } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-const testdata = require('../utils/test_data')
+const testUtils = require('./test_helper')
 const Blog = require('../models/blog')
 
 const app = require('../app')
 const api = supertest(app)
 
-const bloglist = testdata.initialBlogs
+const bloglist = testUtils.initialBlogs
 
-describe('GET /api/blogs', () => {
-   beforeEach(async () => {
-      await Blog.deleteMany({})
-      await Blog.insertMany(testdata.initialBlogs)
-   })
-    
+beforeEach(async () => {
+   await Blog.deleteMany({})
+   await Blog.insertMany(bloglist)
+})
+
+describe('GET /api/blogs', () => { 
    test('Blogs are returned as JSON', async () => {
       await api.get('/api/blogs').expect(200).expect('Content-Type', 'application/json; charset=utf-8')
    })
@@ -36,14 +36,17 @@ describe('GET /api/blogs', () => {
 })
 
 describe('POST /api/blogs', () => {
-   beforeEach(async () => {
-      await Blog.deleteMany({})
-      await Blog.insertMany(testdata.initialBlogs)
-   })
-
    // 4.10: uuden blogin lisäys
    test('New blog added successfully', async () => {
-      await api.post('/api/blogs').send(testdata.newBlog).expect(201)
+      const newBlog = {
+         title: 'testiblogi',
+         author: 'mie',
+         url: 'https://hienourli.hienodomain',
+         likes: 5
+      }
+
+      await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', 'application/json; charset=utf-8')
+
       const response = await api.get('/api/blogs')
 
       assert.strictEqual(response.body.length, (bloglist.length+1))
@@ -81,11 +84,6 @@ describe('POST /api/blogs', () => {
 })
 
 describe('DELETE /api/blogs/:id', () => {
-   beforeEach(async () => {
-      await Blog.deleteMany({})
-      await Blog.insertMany(testdata.initialBlogs)
-   })
-
    // 4.13: yksittäisen blogin poiston testaus
    test('Blog deleted successfully', async () => {
       let response = await api.get('/api/blogs')
@@ -99,11 +97,6 @@ describe('DELETE /api/blogs/:id', () => {
 })
 
 describe('PUT /api/blogs/:id', () => {
-   beforeEach(async () => {
-      await Blog.deleteMany({})
-      await Blog.insertMany(testdata.initialBlogs)
-   })
-
    // 4.14: yksittäisen blogin muokkauksen testaus
    test('Updating object properties', async () => {
       const updated = {likes: 2}

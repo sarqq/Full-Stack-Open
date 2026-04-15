@@ -1,20 +1,29 @@
 const mongoose = require('mongoose')
-const logger = require('../utils/logger')
 
 const blogSchema = mongoose.Schema({
-   title: {type: String, required: true},
+   title: {
+      type: String,
+      required: true
+   },
    author: String,
-   url: {type: String, required: true},
-   likes: {type: Number, default: 0}
+   url: {
+      type: String,
+      required: true
+   },
+   likes: {
+      type: Number,
+      default: 0
+   }
 })
 
 // formaatin muokkaus
 blogSchema.set('toJSON', {
-    transform: (document, returnedObject) => {
-        returnedObject.id = returnedObject._id.toString()
-        delete returnedObject._id
-        delete returnedObject.__v
-    }
+   transform: (document, returnedObject) => {
+      returnedObject.id = returnedObject._id.toString()
+      
+      delete returnedObject._id
+      delete returnedObject.__v
+   }
 })
 
 module.exports = mongoose.model('Blog', blogSchema)

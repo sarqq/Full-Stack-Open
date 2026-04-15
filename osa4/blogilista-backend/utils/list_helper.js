@@ -42,9 +42,7 @@ const mostBlogs = (blogs) => {
 
    // kerää blogit author-attribuutin mukaan author-n -pareiksi
    // ja etsii niistä maksimin
-   const topAuthor = _(blogs).countBy('author')
-      .toPairs()
-      .maxBy(([_, count]) => count)
+   const topAuthor = _(blogs).countBy('author').toPairs().maxBy(([_, count]) => count)
 
    return {author: topAuthor[0], blogs: topAuthor[1]}
 }
@@ -61,8 +59,7 @@ const mostLikes = (blogs) => {
    const topLikes = _(blogs).groupBy('author')
       .map((items, author) => ({
          author, likes: _.sumBy(items, "likes")
-      }))
-      .maxBy("likes")
+      })).maxBy("likes")
 
    return topLikes
 }
