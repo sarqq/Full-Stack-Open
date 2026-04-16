@@ -11,7 +11,11 @@ const userSchema = mongoose.Schema({
    passwordHash: {
       type: String,
       required: [true, 'Password required']
-   }
+   },
+   blogs: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Blog'
+   }]
 })
 
 // formaatin muokkaus

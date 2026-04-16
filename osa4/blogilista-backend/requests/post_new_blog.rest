@@ -2,8 +2,9 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-   "title": "testiblogi",
-   "author": "mie",
+   "title": "testiblogi3",
+   "author": "mie kans",
    "url": "https://hienourli.hienodomain",
-   "likes": 5
+   "likes": 6,
+   "userId": "69e0d9b7e1ef8467c008b2d0"
 }

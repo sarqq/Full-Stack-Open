@@ -49,12 +49,14 @@ describe('POST /api/blogs', () => {
    // 4.10: uuden blogin lisäys
    test('New blog added successfully', async () => {
       const initialBlogs = await testUtils.blogsInDB()
+      const users = await testUtils.usersInDB()
 
       const newBlog = {
          title: 'testiblogi',
          author: 'mie',
          url: 'https://hienourli.hienodomain',
-         likes: 5
+         likes: 5,
+         userId: users[0].id
       }
 
       await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', 'application/json; charset=utf-8')
@@ -68,10 +70,12 @@ describe('POST /api/blogs', () => {
 
    // 4.11: tyhjä likes-kenttä -> likes = 0
    test('Default value 0 for property \'likes\'', async () => {
+      const users = await testUtils.usersInDB()
       const partialBlog = {
          title: 'test411',
          author: 'mie',
-         url: 'joku.urli'
+         url: 'joku.urli',
+         userId: users[0].id
       }
       
       const response = await api.post('/api/blogs').send(partialBlog).expect(201)
@@ -81,15 +85,18 @@ describe('POST /api/blogs', () => {
    // 4.12: tyhjät title- ja url-kentät -> statuskoodi 400
    test('Adding blog without required fields -> 400', async () => {
       const initialBlogs = await testUtils.blogsInDB()
+      const users = await testUtils.usersInDB()
       
       const partialBlog1 = {
          title: 'testi412',
-         author: 'mie'
+         author: 'mie',
+         userId: users[0].id
       }
 
       const partialBlog2 = {
          author: 'mie',
-         url: 'upee.urli'
+         url: 'upee.urli',
+         userId: users[0].id
       }
 
       const response1 = await api.post('/api/blogs').send(partialBlog1).expect(400)

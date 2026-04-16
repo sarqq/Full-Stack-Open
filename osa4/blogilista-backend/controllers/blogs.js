@@ -1,9 +1,12 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 // palauttaa kaikki blogit
 blogRouter.get('/', async (request, response) => {
-   const blogs = await Blog.find({})
+   const blogs = await Blog.find({}).populate('user', {
+      username: 1, name: 1
+   })
    
    response.json(blogs)
 })
@@ -22,14 +25,31 @@ blogRouter.get('/:id', async (request, response) => {
 
 // 4.10: blogin lisäys
 blogRouter.post('/', async (request, response) => {
-   const blog = new Blog(request.body)
-
-   if (!blog.title | !blog.url) {
-      return response.status(400).end()
+   const body = request.body
+   if (!body.title || !body.url) {
+      return response.status(400).json({error: 'Missing or invalid title or URL.'})
    }
 
-   const newBlog = await blog.save()
-   response.status(201).json(newBlog)
+   // 4.17: liitetään viite käyttäjään
+   const user = await User.findById(body.userId)   
+   if(!user) {
+      return response.status(400).json({error: 'Missing or invalid user ID.'})
+   }
+
+   const newBlog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes ?? 0,
+      user: user.id
+   })
+   
+   const savedBlog = await newBlog.save()
+
+   user.blogs = user.blogs.concat(savedBlog)
+   await user.save()
+
+   response.status(201).json(savedBlog)
 })
 
 // 4.13: blogin poisto
