@@ -1,6 +1,18 @@
 const blogRouter = require('express').Router()
+const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
+
+// 4.19: hakee tokenin otsakkeesta
+const getToken = request => {
+   const auth = request.get('authorization')
+   
+   if (auth && auth.startsWith('Bearer ')) {
+      return auth.replace('Bearer ', '')
+   }
+
+   return null
+}
 
 // palauttaa kaikki blogit
 blogRouter.get('/', async (request, response) => {
@@ -26,7 +38,12 @@ blogRouter.get('/:id', async (request, response) => {
 // 4.10: blogin lisäys
 blogRouter.post('/', async (request, response) => {
    const body = request.body
-   if (!body.title || !body.url) {
+   const decodedToken = jwt.verify(getToken(request), process.env.SECRET)
+
+   if(!decodedToken.id) {
+      return response.status(401).json({error: 'Invalid token.'})
+   }
+   else if (!body.title || !body.url) {
       return response.status(400).json({error: 'Missing or invalid title or URL.'})
    }
 
