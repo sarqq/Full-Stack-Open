@@ -48,7 +48,7 @@ blogRouter.post('/', async (request, response) => {
    }
 
    // 4.17: liitetään viite käyttäjään
-   const user = await User.findById(body.userId)   
+   const user = await User.findById(decodedToken.id)   
    if(!user) {
       return response.status(400).json({error: 'Missing or invalid user ID.'})
    }
