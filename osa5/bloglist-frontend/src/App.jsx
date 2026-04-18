@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
+
 import Blog from './components/Blog'
+import Alert from './components/Alert.jsx'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
    const [blogs, setBlogs] = useState([])
-   const [errorMessage, setErrorMessage] = useState(null)
 
    // 5.1: kirjautumislomakkeen toteutus
    const [username, setUsername] = useState('')
@@ -16,6 +18,9 @@ const App = () => {
    const [newTitle, setTitle] = useState('')
    const [newAuthor, setAuthor] = useState('')
    const [newUrl, setUrl] = useState('')
+
+   // 5.4: notifikaation lisäys
+   const [alert, setAlert] = useState(null)
 
    useEffect(() => {
       blogService.getAll().then(blogs =>
@@ -40,7 +45,7 @@ const App = () => {
       
       try {
          if (!newTitle || !newUrl) {
-            setErrorMessage('Could not create blog: invalid or missing title or URL.')
+            setAlert('Could not create blog: invalid or missing title or URL.')
             return
          }
 
@@ -52,17 +57,18 @@ const App = () => {
 
          const returnedBlog = await blogService.create(newBlog)
          
-         console.log(`Successfully added ${returnedBlog.title}`)
-            
+         setAlert(`Successfully added ${returnedBlog.title}`)
+         setTimeout(() => {setAlert(null)}, 5000)   
+         
          setBlogs(blogs.concat(returnedBlog))
          setTitle('')
          setAuthor('')
          setUrl('')
       }
       catch {
-         setErrorMessage('Could not create blog')
+         setAlert('Could not create blog')
          setTimeout(() => {
-            setErrorMessage(null)
+            setAlert(null)
          }, 5000)
       }
    }
@@ -82,9 +88,9 @@ const App = () => {
          setPassword('')
       }
       catch {
-         setErrorMessage('Log in unsuccessful: incorrect username or password.')
+         setAlert('Log in unsuccessful: incorrect username or password.')
          setTimeout(() => {
-            setErrorMessage(null)
+            setAlert(null)
          }, 5000)
       }
    }
@@ -163,6 +169,7 @@ const App = () => {
          {!user && loginForm()}
          {user && (
             <div>
+               <Alert msg={alert}/>
                <p>
                   Logged in as: {user.name}
                   <button onClick={handleLogout}>Log out</button>
