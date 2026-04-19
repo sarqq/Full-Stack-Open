@@ -108,7 +108,7 @@ const App = () => {
       <div>
          <h1>Blogs</h1>
          {!user && (
-            <Togglable buttonLabel="Log in">
+            <Togglable buttonLabelOn="Log in" buttonLabelOff="Cancel">
                <LoginForm username={username} password={password}
                   handleUsernameChange={({target}) => setUsername(target.value)}
                   handlePasswordChange={({target}) => setPassword(target.value)}
@@ -124,7 +124,7 @@ const App = () => {
                   <button onClick={handleLogout}>Log out</button>
                </p>
                {blogView()}
-               <Togglable buttonLabel="Add new">
+               <Togglable buttonLabelOn="Add new" buttonLabelOff="Cancel">
                   <BlogForm createBlog={addBlog}/>
                </Togglable>
             </div>
