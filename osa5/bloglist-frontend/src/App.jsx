@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 
 import Blog from './components/Blog'
 import Alert from './components/Alert.jsx'
+import Togglable from './components/Togglable.jsx'
+import BlogForm from './components/BlogForm.jsx'
+import LoginForm from './components/LoginForm.jsx'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -107,57 +110,9 @@ const App = () => {
       setPassword('')
    }
 
-   const loginForm = () => (
-      <>
-         <h2>Login</h2>
-         <form onSubmit={handleLogin}>
-            <div>
-               <label>
-                  username
-                  <input type="text" value={username} onChange={({target}) => setUsername(target.value)}/>
-               </label>
-            </div>
-            <div>
-               <label>
-                  password
-                  <input type="text" value={password} onChange={({target}) => setPassword(target.value)}/>
-               </label>
-            </div>
-            <button type="submit">Log in loser &gt;:3</button>
-         </form>
-      </>
-   )
-
-   const blogForm =  () => (
-      <>
-         <h2>Add new blog</h2>
-         <form onSubmit={addBlog}>
-            <div>
-               <label>
-                  title:
-                  <input type="text" value={newTitle} onChange={({target}) => setTitle(target.value)}/>
-               </label>
-            </div>
-            <div>
-               <label>
-                  author:
-                  <input type="text" value={newAuthor} onChange={({target}) => setAuthor(target.value)}/>
-               </label>
-            </div>
-            <div>
-               <label>
-                  url:
-                  <input type="text" value={newUrl} onChange={({target}) => setUrl(target.value)}/>
-               </label>
-            </div>
-            <button type="submit">Add blog</button>
-         </form>
-      </>
-   )
-
    const blogView = () => (
       <>
-         <h2>Blogs</h2>
+         <h2>Current blogs</h2>
          {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
          )}
@@ -166,7 +121,16 @@ const App = () => {
 
    return (
       <div>
-         {!user && loginForm()}
+         <h1>Blogs</h1>
+         {!user && (
+            <Togglable buttonLabel="Log in">
+               <LoginForm username={username} password={password}
+                  handleUsernameChange={({target}) => setUsername(target.value)}
+                  handlePasswordChange={({target}) => setPassword(target.value)}
+                  handleSubmit={handleLogin}
+               />
+            </Togglable>
+         )}
          {user && (
             <div>
                <Alert msg={alert}/>
@@ -175,7 +139,14 @@ const App = () => {
                   <button onClick={handleLogout}>Log out</button>
                </p>
                {blogView()}
-               {blogForm()}
+               <Togglable buttonLabel="Add new">
+                  <BlogForm newTitle={newTitle} newAuthor={newAuthor} newUrl={newUrl}
+                     handleTitleChange={({target}) => setTitle(target.value)}
+                     handleAuthorChange={({target}) => setAuthor(target.value)}
+                     handleUrlChange={({target}) => setUrl(target.value)}
+                     handleSubmit={addBlog}
+                  />
+               </Togglable>
             </div>
          )}
       </div>
