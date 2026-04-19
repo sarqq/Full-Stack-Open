@@ -17,11 +17,6 @@ const App = () => {
    const [password, setPassword] = useState('')
    const [user, setUser] = useState(null)
 
-   // 5.3: blogin lisäyksen toteutus
-   const [newTitle, setTitle] = useState('')
-   const [newAuthor, setAuthor] = useState('')
-   const [newUrl, setUrl] = useState('')
-
    // 5.4: notifikaation lisäys
    const [alert, setAlert] = useState(null)
 
@@ -43,30 +38,20 @@ const App = () => {
       }
    }, [])
 
-   const addBlog = async event => {
-      event.preventDefault()
-      
+   const addBlog = async (blogObject) => {
       try {
-         if (!newTitle || !newUrl) {
+         if (!blogObject.title || !blogObject.url) {
             setAlert('Could not create blog: invalid or missing title or URL.')
             return
          }
 
-         const newBlog = {
-            title: newTitle,
-            author: newAuthor,
-            url: newUrl
-         }
-
-         const returnedBlog = await blogService.create(newBlog)
-         
+         const returnedBlog = await blogService.create(blogObject)
+            
          setAlert(`Successfully added ${returnedBlog.title}`)
          setTimeout(() => {setAlert(null)}, 5000)   
-         
+            
          setBlogs(blogs.concat(returnedBlog))
-         setTitle('')
-         setAuthor('')
-         setUrl('')
+         
       }
       catch {
          setAlert('Could not create blog')
@@ -140,12 +125,7 @@ const App = () => {
                </p>
                {blogView()}
                <Togglable buttonLabel="Add new">
-                  <BlogForm newTitle={newTitle} newAuthor={newAuthor} newUrl={newUrl}
-                     handleTitleChange={({target}) => setTitle(target.value)}
-                     handleAuthorChange={({target}) => setAuthor(target.value)}
-                     handleUrlChange={({target}) => setUrl(target.value)}
-                     handleSubmit={addBlog}
-                  />
+                  <BlogForm createBlog={addBlog}/>
                </Togglable>
             </div>
          )}
