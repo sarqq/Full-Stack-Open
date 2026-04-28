@@ -55,9 +55,7 @@ const App = () => {
       }
       catch {
          setAlert('Could not create blog')
-         setTimeout(() => {
-            setAlert(null)
-         }, 5000)
+         setTimeout(() => {setAlert(null)}, 5000)
       }
    }
 
@@ -76,9 +74,24 @@ const App = () => {
       }
       catch {
          setAlert('Unknown error when liking blog.')
-         setTimeout(() => {
-            setAlert(null)
-         }, 5000)
+         setTimeout(() => {setAlert(null)}, 5000)
+      }
+   }
+
+   // 5.11: blogin poisto
+   const removeBlog = async (blogObject) => {
+      try {
+         await blogService.del(blogObject.id)
+
+         // päivittää blogilistan
+         setBlogs(blogs.filter((blog => blog.id !== blogObject.id)))
+
+         setAlert(`Removed ${blogObject.title} by ${blogObject.author}`)
+         setTimeout(() => {setAlert(null)}, 5000)
+      }
+      catch {
+         setAlert('Could not remove blog.')
+         setTimeout(() => {setAlert(null), 5000})
       }
    }
 
@@ -98,9 +111,7 @@ const App = () => {
       }
       catch {
          setAlert('Log in unsuccessful: incorrect username or password.')
-         setTimeout(() => {
-            setAlert(null)
-         }, 5000)
+         setTimeout(() => {setAlert(null)}, 5000)
       }
    }
 
@@ -121,7 +132,7 @@ const App = () => {
       <>
          <h2>Current blogs</h2>
          {blogs.sort((a, b) => a.likes < b.likes).map(blog =>
-            <Blog key={blog.id} blog={blog} handleLikes={updateLikes} user={user}/>
+            <Blog key={blog.id} blog={blog} handleLikes={updateLikes} handleRemove={removeBlog} user={user}/>
          )}
       </>
    )

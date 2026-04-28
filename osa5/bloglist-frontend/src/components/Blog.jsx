@@ -1,6 +1,6 @@
 import Togglable from "./Togglable"
 
-const Blog = ({ blog, handleLikes }) => {
+const Blog = ({ blog, handleLikes, handleRemove }) => {
    const blogStyle = {
       border: 'solid',
       borderWidth: 1,
@@ -20,6 +20,15 @@ const Blog = ({ blog, handleLikes }) => {
       )
    }
 
+   // 5.11: blogin poisto
+   const handleDelClick = (event) => {
+      event.preventDefault()
+
+      if(window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+         handleRemove(blog)
+      }
+   }
+
    return (
       <div style={blogStyle}>
          <h3>{blog.title}</h3>
@@ -34,6 +43,7 @@ const Blog = ({ blog, handleLikes }) => {
          <div>
             author: {blog.author}
          </div>
+         <button onClick={handleDelClick}>Remove</button>
          </Togglable>
       </div>
   )
