@@ -116,10 +116,11 @@ const App = () => {
       setPassword('')
    }
 
+   // 5.10: blogien renderöinti like-järjestyksessä
    const blogView = () => (
       <>
          <h2>Current blogs</h2>
-         {blogs.map(blog =>
+         {blogs.sort((a, b) => a.likes < b.likes).map(blog =>
             <Blog key={blog.id} blog={blog} handleLikes={updateLikes} user={user}/>
          )}
       </>
