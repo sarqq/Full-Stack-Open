@@ -24,13 +24,25 @@ describe('Blog renders correctly', () => {
    })
    // 5.14: blogin renderöityminen oikein, kun togglattu auki
    test('Url, likes and user visible when toggled', async () => {
-      const user = userEvent.setup()
-
       render(<Blog blog={testblog} handleLikes={mockHandler} handleRemove={mockHandler}/>)
+      
+      const user = userEvent.setup()
       await user.click(screen.getByText('View'))
 
       expect(screen.queryByText('juuh.org')).toBeVisible()
       expect(screen.queryByText('author: mie')).toBeVisible()
       expect(screen.queryByText('likes: 69')).toBeVisible()
    })
+})
+
+// 5.15: like-nappi kutsuu tapahtumankäsittelijäfunktiota oikein
+test('Like button functions correctly', async () => {
+   render(<Blog blog={testblog} handleLikes={mockHandler} handleRemove={mockHandler}/>)
+
+   const user = userEvent.setup()
+   await user.click(screen.getByText('Like'))
+   expect(mockHandler.mock.calls).toHaveLength(1)
+
+   await user.click(screen.getByText('Like'))
+   expect(mockHandler.mock.calls).toHaveLength(2)
 })
