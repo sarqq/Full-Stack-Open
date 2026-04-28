@@ -11,15 +11,19 @@ const Togglable = (props) => {
       setVisible(!visible)
    }
 
+   const buttonStyle = {
+      float: 'right'
+   }
+
    return (
       <div>
          <div style={hideWhenVisible}>
-            <button onClick={toggleVisibility}>{props.buttonLabelOn}</button>
+            <button onClick={toggleVisibility} style={buttonStyle}>{props.buttonLabelOn}</button>
          </div>
          
          <div style={showWhenVisible}>
             {props.children}
-            <button onClick={toggleVisibility}>{props.buttonLabelOff}</button>
+            <button onClick={toggleVisibility} style={buttonStyle}>{props.buttonLabelOff}</button>
          </div>
       </div>
    )
