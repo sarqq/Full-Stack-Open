@@ -34,14 +34,14 @@ const Blog = ({ blog, handleLikes, handleRemove }) => {
          <h3>{blog.title}</h3>
          <Togglable buttonLabelOn="View" buttonLabelOff="Hide">
             <div>
-            url: <a href={blog.url}>{blog.url}</a>
+               url: <a href={blog.url}>{blog.url}</a>
             </div>
             <div>
-            likes: {blog.likes}
+               likes: {blog.likes}
                <button onClick={handleLikeClick}>Like</button>
             </div>
             <div>
-            author: {blog.author}
+               author: {blog.author}
             </div>
             <button onClick={handleDelClick}>Remove</button>
          </Togglable>
