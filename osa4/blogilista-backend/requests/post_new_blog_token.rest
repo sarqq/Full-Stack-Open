@@ -1,11 +1,11 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwiaWQiOiI2OWUwZDliN2UxZWY4NDY3YzAwOGIyZDAiLCJpYXQiOjE3NzY0NDExMTN9.DNuIudvRuwJvQlczjLROp2hb-m4O_E0Dl0pDRPbu1R8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QzIiwiaWQiOiI2OWUyNWVjOTcyNzZjNjQ3ZDMwNzVlMTQiLCJpYXQiOjE3NzY0NDM0NjEsImV4cCI6MTc3NjQ0NzA2MX0.HtYsp7e34njDIOrww6TL5VlLFS-JSOmgKL19sVCiqr4
 
 {
    "title": "testiblogi3",
    "author": "mie kans",
    "url": "https://hienourli.hienodomain",
    "likes": 6,
-   "userId": "69e0d9b7e1ef8467c008b2d0"
+   "userId": "69e25ec97276c647d3075e14"
 }

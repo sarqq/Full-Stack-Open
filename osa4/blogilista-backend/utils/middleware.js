@@ -21,8 +21,11 @@ const errorHandler = (error, request, response, next) => {
    else if(error.name === 'JsonWebTokenError') {
       return response.status(401).json({error: 'Missing or invalid token.'})
    }
+   else if(error.name === 'TokenExpiredError') {
+      return response.status(401).json({error: 'Token expired.'})
+   }
 
    next(error)
 }
 
-module.exports = { unknownEndpoint, errorHandler }
+module.exports = {unknownEndpoint, errorHandler}
