@@ -23,7 +23,7 @@ const App = () => {
    useEffect(() => {
       blogService.getAll().then(blogs =>
          setBlogs( blogs )
-      )  
+      )
    }, [])
 
    useEffect(() => {
@@ -46,12 +46,12 @@ const App = () => {
          }
 
          const returnedBlog = await blogService.create(blogObject)
-            
+
          setAlert(`Successfully added ${returnedBlog.title}`)
-         setTimeout(() => {setAlert(null)}, 5000)   
-            
+         setTimeout(() => {setAlert(null)}, 5000)
+
          setBlogs(blogs.concat(returnedBlog))
-         
+
       }
       catch {
          setAlert('Could not create blog')
@@ -100,11 +100,11 @@ const App = () => {
       console.log(`Attempting to log in as: ${username} - ${password}`)
 
       try {
-         const user = await loginService.login({username, password})
-         
+         const user = await loginService.login({ username, password })
+
          window.localStorage.setItem('loggedUser', JSON.stringify(user))
          blogService.setToken(user.token)
-         
+
          setUser(user)
          setUsername('')
          setPassword('')
@@ -118,7 +118,7 @@ const App = () => {
    // 5.2: käyttäjän kirjaus ulos
    const handleLogout = async event => {
       event.preventDefault()
-      
+
       window.localStorage.removeItem('loggedUser')
 
       blogService.setToken(null)
@@ -143,8 +143,8 @@ const App = () => {
          {!user && (
             <Togglable buttonLabelOn="Log in" buttonLabelOff="Cancel">
                <LoginForm username={username} password={password}
-                  handleUsernameChange={({target}) => setUsername(target.value)}
-                  handlePasswordChange={({target}) => setPassword(target.value)}
+                  handleUsernameChange={({ target }) => setUsername(target.value)}
+                  handlePasswordChange={({ target }) => setPassword(target.value)}
                   handleSubmit={handleLogin}
                />
             </Togglable>

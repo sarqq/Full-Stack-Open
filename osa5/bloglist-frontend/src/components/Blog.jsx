@@ -1,4 +1,4 @@
-import Togglable from "./Togglable"
+import Togglable from './Togglable'
 
 const Blog = ({ blog, handleLikes, handleRemove }) => {
    const blogStyle = {
@@ -11,7 +11,7 @@ const Blog = ({ blog, handleLikes, handleRemove }) => {
    // 5.8: blogin tykkäysten päivitys
    const handleLikeClick = (event) => {
       event.preventDefault()
-      
+
       handleLikes(
          {
             ...blog,
@@ -33,20 +33,20 @@ const Blog = ({ blog, handleLikes, handleRemove }) => {
       <div style={blogStyle}>
          <h3>{blog.title}</h3>
          <Togglable buttonLabelOn="View" buttonLabelOff="Hide">
-         <div>
+            <div>
             url: <a href={blog.url}>{blog.url}</a>
-         </div>
-         <div>
+            </div>
+            <div>
             likes: {blog.likes}
-            <button onClick={handleLikeClick}>Like</button>
-         </div>
-         <div>
+               <button onClick={handleLikeClick}>Like</button>
+            </div>
+            <div>
             author: {blog.author}
-         </div>
-         <button onClick={handleDelClick}>Remove</button>
+            </div>
+            <button onClick={handleDelClick}>Remove</button>
          </Togglable>
       </div>
-  )
+   )
 }
 
 export default Blog

@@ -1,4 +1,4 @@
-const Alert = ({msg}) => {
+const Alert = ({ msg }) => {
    if (!msg) return null
 
    return (
