@@ -41,8 +41,8 @@ describe('Blog app', () => {
    })
 
    describe('When logged in', () => {
-      // kirjaudutaan sisään ennen jokaista testiä
-      beforeEach(async ({page}) => {
+      beforeEach(async ({page, request}) => {
+         // kirjaudutaan sisään ennen jokaista testiä
          await page.getByRole('button', {name: 'Log in'}).click()
          await page.getByLabel('username').fill('test5')
          await page.getByLabel('password').fill('salakala')
@@ -57,20 +57,29 @@ describe('Blog app', () => {
          await page.getByLabel('author').fill('testijäbä')
          await page.getByLabel('url').fill('https://testo.rane.org')
          await page.getByRole('button', {name: 'Add blog'}).click()
+         await page.getByRole('button', {name: 'Cancel'}).click()
 
          await expect(page.getByText('Successfully added test519')).toBeVisible()
       })
 
       // 5.20: blogin tykkäys
       test('Blog liked successfully', async ({page}) => {
-         const blog = page.getByText('test519').first().locator('..')
+         //lisätään testiblogi
+         await page.getByRole('button', {name: 'Add new'}).click()
+         await page.getByLabel('title').fill('testiblogi')
+         await page.getByLabel('author').fill('Testi Testonen')
+         await page.getByLabel('url').fill('https://hieno.doma.in')
+         await page.getByRole('button', {name: 'Add blog'}).click()
+         await page.getByRole('button', {name: 'Cancel'}).click()
+
+         const blog = page.getByText('testiblogi').locator('..')
          await blog.getByRole('button', {name: 'View'}).click()
 
          // haetaan liket regexillä, koska en osannut helpompaa keinoa :DD
-         const likesText = await blog.getByText(/likes: \d+/).first().textContent()
+         const likesText = await blog.getByText(/likes: \d+/).textContent()
          const originalLikes = Number(likesText.match(/\d+/)[0])
          await blog.getByRole('button', {name: 'Like'}).click()
-         
+
          await expect(blog.getByText(`likes: ${originalLikes+1}`)).toBeVisible()
       })
    })

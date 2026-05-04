@@ -30,7 +30,7 @@ const Blog = ({ blog, handleLikes, handleRemove }) => {
    }
 
    return (
-      <div style={blogStyle}>
+      <div className="blog" style={blogStyle}>
          <h3>{blog.title}</h3>
          <Togglable buttonLabelOn="View" buttonLabelOff="Hide">
             <div>
