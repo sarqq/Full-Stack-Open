@@ -60,5 +60,18 @@ describe('Blog app', () => {
 
          await expect(page.getByText('Successfully added test519')).toBeVisible()
       })
+
+      // 5.20: blogin tykkäys
+      test('Blog liked successfully', async ({page}) => {
+         const blog = page.getByText('test519').first().locator('..')
+         await blog.getByRole('button', {name: 'View'}).click()
+
+         // haetaan liket regexillä, koska en osannut helpompaa keinoa :DD
+         const likesText = await blog.getByText(/likes: \d+/).first().textContent()
+         const originalLikes = Number(likesText.match(/\d+/)[0])
+         await blog.getByRole('button', {name: 'Like'}).click()
+         
+         await expect(blog.getByText(`likes: ${originalLikes+1}`)).toBeVisible()
+      })
    })
 })
