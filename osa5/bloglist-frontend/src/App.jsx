@@ -140,6 +140,7 @@ const App = () => {
    return (
       <div>
          <h1>Blogs</h1>
+         <Alert msg={alert}/>
          {!user && (
             <Togglable buttonLabelOn="Log in" buttonLabelOff="Cancel">
                <LoginForm username={username} password={password}
@@ -151,7 +152,6 @@ const App = () => {
          )}
          {user && (
             <div>
-               <Alert msg={alert}/>
                <p>
                   Logged in as: {user.name}
                   <button onClick={handleLogout}>Log out</button>
