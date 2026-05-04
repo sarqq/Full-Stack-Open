@@ -82,5 +82,27 @@ describe('Blog app', () => {
 
          await expect(blog.getByText(`likes: ${originalLikes+1}`)).toBeVisible()
       })
+
+      // 5.21: blogin poisto
+      test('Blog removed successfully', async ({page}) => {
+         //lisätään testiblogi
+         await page.getByRole('button', {name: 'Add new'}).click()
+         await page.getByLabel('title').fill('testiblogi2')
+         await page.getByLabel('author').fill('Testi Testonen')
+         await page.getByLabel('url').fill('https://hieno.doma.in')
+         await page.getByRole('button', {name: 'Add blog'}).click()
+         await page.getByRole('button', {name: 'Cancel'}).click()
+
+         const blog = page.getByText('testiblogi2').locator('..')
+         await blog.getByRole('button', {name: 'View'}).click()
+
+         page.on('dialog', async dialog => {
+            expect(dialog.type()).toBe('confirm')
+            await dialog.accept()
+         })
+
+         await blog.getByRole('button', {name: 'Remove'}).click()
+         await expect(page.getByText('Removed testiblogi2 by Testi Testonen')).toBeVisible()
+      })
    })
 })
