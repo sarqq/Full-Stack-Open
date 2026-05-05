@@ -1,6 +1,10 @@
+import {useParams} from 'react-router-dom'
 import Togglable from './Togglable'
 
-const Blog = ({ blog, handleLikes, handleRemove }) => {
+const Blog = ({ blogs, handleLikes, handleRemove, user }) => {
+   const id = useParams().id
+   const blog = blogs.find(b => b.id === id)
+
    const blogStyle = {
       border: 'solid',
       borderWidth: 1,
@@ -38,12 +42,16 @@ const Blog = ({ blog, handleLikes, handleRemove }) => {
             </div>
             <div>
                likes: {blog.likes}
-               <button onClick={handleLikeClick}>Like</button>
+               {user && (
+                  <button onClick={handleLikeClick}>Like</button>
+               )}
             </div>
             <div>
                author: {blog.author}
             </div>
-            <button onClick={handleDelClick}>Remove</button>
+               {user && (
+                  <button onClick={handleDelClick}>Remove</button>
+               )}
          </Togglable>
       </div>
    )

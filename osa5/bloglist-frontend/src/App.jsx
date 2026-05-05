@@ -162,9 +162,13 @@ const App = () => {
                   <Alert msg={alert}/>
                   <div>
                      <h2>Current blogs</h2>
-                     {blogs.sort((a, b) => a.likes < b.likes).map(blog =>
-                        <Blog key={blog.id} blog={blog} handleLikes={updateLikes} handleRemove={removeBlog} user={user}/>
-                     )}
+                     <ul>
+                        {blogs.sort((a, b) => a.likes < b.likes).map(blog =>
+                           <li key={blog.id}>
+                              <Link to={`blogs/${blog.id}`}>{blog.title}</Link>
+                           </li>
+                        )}
+                     </ul>
                      {user && (
                         <Togglable buttonLabelOn="Add new" buttonLabelOff="Cancel">
                            <BlogForm createBlog={addBlog}/>
@@ -174,6 +178,10 @@ const App = () => {
                </div>
             }/>
             
+            <Route path="/blogs/:id" element={
+               <Blog blogs={blogs} handleLikes={updateLikes} handleRemove={removeBlog} user={user}/>
+            }/>
+
             <Route path="/login" element={
                <div>
                   {!user && (
