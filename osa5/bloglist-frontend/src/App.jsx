@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import {
    BrowserRouter as Router,
-   Routes,
-   Route,
-   Link,
+   Routes, Route, Link,
    useNavigate
 } from 'react-router-dom'
-import {Container} from '@mui/material'
+import {
+   Container, TableContainer,
+   AppBar, Toolbar,
+   Button, Typography,
+   Table, TableBody, TableCell, TableHead, TableRow, Paper
+} from '@mui/material'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -162,16 +165,23 @@ const App = () => {
 
    return (
       <Container>
-         <div>
-            <Link style={padding} to="/">Blogs</Link>
-            <Link style={padding} to="/create">Create</Link>
-            {!user && (
-               <Link style={padding} to="/login">Log in</Link>
-            )}
-            {user && (
-               <button style={padding} onClick={handleLogout}>Log out</button>
-            )}
-         </div>
+         <AppBar position="static">
+            <Toolbar>
+               <Typography variant="h5" style={{padding: 10}}>
+                  Blog App
+               </Typography>
+
+               <Button color="inherit" component={Link} to="/">Blogs</Button>
+               <Button color="inherit" component={Link} to="/create">Create</Button>
+               
+               {!user && (
+                  <Button color="inherit" component={Link} to="/login">Log in</Button>
+               )}
+               {user && (
+                  <Button color="inherit" onClick={handleLogout}>Log out</Button>
+               )}
+            </Toolbar>
+         </AppBar>
             
          <Routes>
             <Route path="/" element={
@@ -179,14 +189,19 @@ const App = () => {
                   <Notification msg={notification}/>
                   <div>
                      <h2>Current blogs</h2>
-                     <ul>
-                        {blogs.sort((a, b) => a.likes < b.likes).map(blog =>
-                           <li key={blog.id}>
-                              <Link to={`blogs/${blog.id}`}>{blog.title}</Link>
-                           </li>
-                        )}
-                     </ul>
-                     
+                     <TableContainer component={Paper}>
+                        <Table>
+                           <TableBody>
+                              {blogs.sort((a, b) => a.likes < b.likes).map(blog =>
+                                 <TableRow key={blog.id}>
+                                    <TableCell>
+                                       <Link to={`blogs/${blog.id}`}>{blog.title}</Link>
+                                    </TableCell>
+                                 </TableRow>
+                              )}
+                           </TableBody>
+                        </Table>
+                     </TableContainer>
                   </div>
                </div>
             }/>
