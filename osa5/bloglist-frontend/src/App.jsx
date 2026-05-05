@@ -61,6 +61,7 @@ const App = () => {
          setAlert(`Successfully added ${returnedBlog.title}`)
          setTimeout(() => {setAlert(null)}, 5000)
 
+         navigate('/')
          setBlogs(blogs.concat(returnedBlog))
 
       }
@@ -97,8 +98,7 @@ const App = () => {
          // päivittää blogilistan
          setBlogs(blogs.filter((blog => blog.id !== blogObject.id)))
 
-         setAlert(`Removed ${blogObject.title} by ${blogObject.author}`)
-         setTimeout(() => {setAlert(null)}, 5000)
+         navigate('/')
       }
       catch {
          setAlert('Could not remove blog.')
@@ -148,6 +148,7 @@ const App = () => {
       <>
          <div>
             <Link style={padding} to="/">Blogs</Link>
+            <Link style={padding} to="/create">Create</Link>
             {!user && (
                <Link style={padding} to="/login">Log in</Link>
             )}
@@ -169,12 +170,19 @@ const App = () => {
                            </li>
                         )}
                      </ul>
-                     {user && (
-                        <Togglable buttonLabelOn="Add new" buttonLabelOff="Cancel">
-                           <BlogForm createBlog={addBlog}/>
-                        </Togglable>
-                     )}
+                     
                   </div>
+               </div>
+            }/>
+
+            <Route path="/create" element={
+               <div>
+                  {user && (
+                     <BlogForm createBlog={addBlog}/>
+                  )}
+                  {!user && (
+                     <p>Log in to add blogs :3</p>
+                  )}
                </div>
             }/>
             
