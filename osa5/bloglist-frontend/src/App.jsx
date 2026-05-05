@@ -1,4 +1,14 @@
 import { useState, useEffect } from 'react'
+import {
+   BrowserRouter as Router,
+   Routes,
+   Route,
+   Link,
+   useNavigate
+} from 'react-router-dom'
+
+import blogService from './services/blogs'
+import loginService from './services/login'
 
 import Blog from './components/Blog'
 import Alert from './components/Alert.jsx'
@@ -6,8 +16,7 @@ import Togglable from './components/Togglable.jsx'
 import BlogForm from './components/BlogForm.jsx'
 import LoginForm from './components/LoginForm.jsx'
 
-import blogService from './services/blogs'
-import loginService from './services/login'
+
 
 const App = () => {
    const [blogs, setBlogs] = useState([])
@@ -19,6 +28,8 @@ const App = () => {
 
    // 5.4: notifikaation lisäys
    const [alert, setAlert] = useState(null)
+
+   const navigate = useNavigate()
 
    useEffect(() => {
       blogService.getAll().then(blogs =>
@@ -105,6 +116,8 @@ const App = () => {
          window.localStorage.setItem('loggedUser', JSON.stringify(user))
          blogService.setToken(user.token)
 
+         navigate('/')
+
          setUser(user)
          setUsername('')
          setPassword('')
@@ -121,48 +134,62 @@ const App = () => {
 
       window.localStorage.removeItem('loggedUser')
 
+      navigate('/')
+
       blogService.setToken(null)
       setUser(null)
       setUsername('')
       setPassword('')
    }
 
-   // 5.10: blogien renderöinti like-järjestyksessä
-   const blogView = () => (
-      <>
-         <h2>Current blogs</h2>
-         {blogs.sort((a, b) => a.likes < b.likes).map(blog =>
-            <Blog key={blog.id} blog={blog} handleLikes={updateLikes} handleRemove={removeBlog} user={user}/>
-         )}
-      </>
-   )
+   const padding = {padding: 5}
 
    return (
-      <div>
-         <h1>Blogs</h1>
-         <Alert msg={alert}/>
-         {!user && (
-            <Togglable buttonLabelOn="Log in" buttonLabelOff="Cancel">
-               <LoginForm username={username} password={password}
-                  handleUsernameChange={({ target }) => setUsername(target.value)}
-                  handlePasswordChange={({ target }) => setPassword(target.value)}
-                  handleSubmit={handleLogin}
-               />
-            </Togglable>
-         )}
-         {user && (
-            <div>
-               <p>
-                  Logged in as: {user.name}
-                  <button onClick={handleLogout}>Log out</button>
-               </p>
-               {blogView()}
-               <Togglable buttonLabelOn="Add new" buttonLabelOff="Cancel">
-                  <BlogForm createBlog={addBlog}/>
-               </Togglable>
-            </div>
-         )}
-      </div>
+      <>
+         <div>
+            <Link style={padding} to="/">Blogs</Link>
+            {!user && (
+               <Link style={padding} to="/login">Log in</Link>
+            )}
+            {user && (
+               <button style={padding} onClick={handleLogout}>Log out</button>
+            )}
+         </div>
+            
+         <Routes>
+            <Route path="/" element={
+               <div>
+                  <Alert msg={alert}/>
+                  <div>
+                     <h2>Current blogs</h2>
+                     {blogs.sort((a, b) => a.likes < b.likes).map(blog =>
+                        <Blog key={blog.id} blog={blog} handleLikes={updateLikes} handleRemove={removeBlog} user={user}/>
+                     )}
+                     {user && (
+                        <Togglable buttonLabelOn="Add new" buttonLabelOff="Cancel">
+                           <BlogForm createBlog={addBlog}/>
+                        </Togglable>
+                     )}
+                  </div>
+               </div>
+            }/>
+            
+            <Route path="/login" element={
+               <div>
+                  {!user && (
+                     <LoginForm username={username} password={password}
+                           handleUsernameChange={({ target }) => setUsername(target.value)}
+                           handlePasswordChange={({ target }) => setPassword(target.value)}
+                           handleSubmit={handleLogin}
+                     />
+                  )}
+                  {user && (
+                     <p>Currently logged in as {user.name}</p>
+                  )}
+               </div>
+            }/>
+         </Routes>
+      </>
    )
 }
 
