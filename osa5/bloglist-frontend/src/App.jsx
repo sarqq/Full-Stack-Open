@@ -6,12 +6,13 @@ import {
    Link,
    useNavigate
 } from 'react-router-dom'
+import {Container} from '@mui/material'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 import Blog from './components/Blog'
-import Alert from './components/Alert.jsx'
+import Notification from './components/Notification.jsx'
 import Togglable from './components/Togglable.jsx'
 import BlogForm from './components/BlogForm.jsx'
 import LoginForm from './components/LoginForm.jsx'
@@ -27,7 +28,7 @@ const App = () => {
    const [user, setUser] = useState(null)
 
    // 5.4: notifikaation lisäys
-   const [alert, setAlert] = useState(null)
+   const [notification, setNotification] = useState(null)
 
    const navigate = useNavigate()
 
@@ -52,22 +53,31 @@ const App = () => {
    const addBlog = async (blogObject) => {
       try {
          if (!blogObject.title || !blogObject.url) {
-            setAlert('Could not create blog: invalid or missing title or URL.')
+            setNotification({
+               text: 'Could not create blog: invalid or missing title or URL.',
+               type: 'error'
+            })
             return
          }
 
          const returnedBlog = await blogService.create(blogObject)
 
-         setAlert(`Successfully added ${returnedBlog.title}`)
-         setTimeout(() => {setAlert(null)}, 5000)
+         setNotification({
+            text: `Successfully added ${returnedBlog.title}`,
+            type: 'success'
+         })
+         setTimeout(() => {setNotification(null)}, 5000)
 
          navigate('/')
          setBlogs(blogs.concat(returnedBlog))
 
       }
       catch {
-         setAlert('Could not create blog')
-         setTimeout(() => {setAlert(null)}, 5000)
+         setNotification({
+            text: 'Could not create blog',
+            type: 'error'
+         })
+         setTimeout(() => {setNotification(null)}, 5000)
       }
    }
 
@@ -80,13 +90,13 @@ const App = () => {
          setBlogs(blogs.map(blog =>
             blog.id === updatedBlog.id ? updatedBlog : blog
          ))
-
-         setAlert(`Liked ${updatedBlog.title}`)
-         setTimeout(() => {setAlert(null)}, 5000)
       }
       catch {
-         setAlert('Unknown error when liking blog.')
-         setTimeout(() => {setAlert(null)}, 5000)
+         setNotification({
+            text: 'Unknown error when liking blog.',
+            type: 'error'
+         })
+         setTimeout(() => {setNotification(null)}, 5000)
       }
    }
 
@@ -101,8 +111,11 @@ const App = () => {
          navigate('/')
       }
       catch {
-         setAlert('Could not remove blog.')
-         setTimeout(() => {setAlert(null), 5000})
+         setNotification({
+            text: 'Could not remove blog.',
+            type: 'error'
+         })
+         setTimeout(() => {setNotification(null), 5000})
       }
    }
 
@@ -123,8 +136,11 @@ const App = () => {
          setPassword('')
       }
       catch {
-         setAlert('Log in unsuccessful: incorrect username or password.')
-         setTimeout(() => {setAlert(null)}, 5000)
+         setNotification({
+            text: 'Login unsuccessful: incorrect username or password.',
+            type: 'error'
+         })
+         setTimeout(() => {setNotification(null)}, 5000)
       }
    }
 
@@ -145,7 +161,7 @@ const App = () => {
    const padding = {padding: 5}
 
    return (
-      <>
+      <Container>
          <div>
             <Link style={padding} to="/">Blogs</Link>
             <Link style={padding} to="/create">Create</Link>
@@ -160,7 +176,7 @@ const App = () => {
          <Routes>
             <Route path="/" element={
                <div>
-                  <Alert msg={alert}/>
+                  <Notification msg={notification}/>
                   <div>
                      <h2>Current blogs</h2>
                      <ul>
@@ -205,7 +221,7 @@ const App = () => {
                </div>
             }/>
          </Routes>
-      </>
+      </Container>
    )
 }
 

@@ -1,20 +1,12 @@
+import {TextField, Button} from '@mui/material'
+
 const LoginForm = (props) => (
    <div>
       <h2>Login</h2>
       <form onSubmit={props.handleSubmit}>
-         <div>
-            <label>
-               username
-               <input type="text" value={props.username} onChange={props.handleUsernameChange}/>
-            </label>
-         </div>
-         <div>
-            <label>
-               password
-               <input type="text" value={props.password} onChange={props.handlePasswordChange}/>
-            </label>
-         </div>
-         <button type="submit">Log in loser &gt;:3</button>
+         <TextField label="username" value={props.username} onChange={props.handleUsernameChange}/>
+         <TextField label="password" value={props.password} onChange={props.handlePasswordChange}/>
+         <Button type="submit" variant="contained" style={{marginTop: 10, padding: 5}}>Log in loser &gt;:3</Button>
       </form>
    </div>
 )

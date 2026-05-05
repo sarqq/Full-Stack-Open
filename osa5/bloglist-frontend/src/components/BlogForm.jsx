@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import {TextField, Button} from '@mui/material'
+
 
 const BlogForm = ({ createBlog }) => {
    // 5.3: blogin lisäyksen toteutus
@@ -24,25 +26,10 @@ const BlogForm = ({ createBlog }) => {
       <div>
          <h2>Add new blog</h2>
          <form onSubmit={addBlog}>
-            <div>
-               <label>
-                  title:
-                  <input type="text" value={newTitle} onChange={event => setTitle(event.target.value)}/>
-               </label>
-            </div>
-            <div>
-               <label>
-                  author:
-                  <input type="text" value={newAuthor} onChange={event => setAuthor(event.target.value)}/>
-               </label>
-            </div>
-            <div>
-               <label>
-                  url:
-                  <input type="text" value={newUrl} onChange={event => setUrl(event.target.value)}/>
-               </label>
-            </div>
-            <button type="submit">Add blog</button>
+            <TextField label="title" value={newTitle} onChange={event => setTitle(event.target.value)}/>
+            <TextField label="author" value={newAuthor} onChange={event => setAuthor(event.target.value)}/>
+            <TextField label="url" value={newUrl} onChange={event => setUrl(event.target.value)}/>
+            <Button type="submit" style={{marginTop: 10, marginBottom: 10}}>Add blog</Button>
          </form>
       </div>
    )
